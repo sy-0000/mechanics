@@ -34,7 +34,9 @@ def collect_chars():
         with open(path, encoding='utf-8') as f:
             text = f.read()
         for ch in text:
-            if ord(ch) > 0x7F:
+            cp = ord(ch)
+            # 跳過 emoji / 特殊符號(只在桌面 2D HUD 使用,系統字型即可)
+            if cp > 0x7F and not (0x2300 <= cp <= 0x27BF or cp >= 0x1F000):
                 chars.add(ch)
     chars.discard(' ')
     return ''.join(sorted(chars))

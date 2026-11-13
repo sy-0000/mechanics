@@ -90,6 +90,8 @@ export const server = {
   roster: (list) => encode('roster', { roster: list }),
   export: (csv) => encode('export', { csv }),
   error: (reason) => encode('error', { reason }),
+  recenter: () => encode('recenter'),
+  rename: (name) => encode('rename', { name }),
 };
 
 /** 預設房間狀態 */
