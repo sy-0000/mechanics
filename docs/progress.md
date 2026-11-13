@@ -73,10 +73,8 @@
 4. 重新定位後底座距離 0.55m / 桌面低於眼 0.45m 的體感
 5. 電腦 60fps(一般獨顯/內顯;容器內無硬體 GPU)
 
-## 已知外部阻礙
-- **git push 403**:Claude GitHub App 無 sy-0000/mechanics 權限,等使用者在
-  https://claude.ai/connect-github 修復後補推(本機已有完整 commit)。
-
-## 下一步
-使用者執行 `wrangler login` + `wrangler secret put TEACHER_PIN` 後跑 `npm run deploy`;
-或告知 GitHub 權限已修復,由我補推分支 claude/mechanisms-vr-workshop-hnpn58。
+## 下一步(第 10 步 部署,需使用者授權)
+1. `npx wrangler login`(瀏覽器授權,wrangler 目前未登入)
+2. `npx wrangler secret put TEACHER_PIN`
+3. `npm run deploy`
+分支 claude/mechanisms-vr-workshop-hnpn58 已推上 GitHub。
