@@ -1,0 +1,25 @@
+{
+  "name": "mechanisms-vr-workshop",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "機構學微縮工作坊 VR(國中生活動版)",
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "build": "vite build",
+    "preview:worker": "npm run build && wrangler dev",
+    "loadtest": "node scripts/loadtest.js",
+    "font": "python3 scripts/subset-font.py",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "6.3.5",
+    "vitest": "3.2.4",
+    "wrangler": "4.42.0",
+    "ws": "8.18.0"
+  }
+}

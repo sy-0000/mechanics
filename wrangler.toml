@@ -1,0 +1,22 @@
+name = "mechanisms-vr-workshop"
+main = "worker/index.js"
+compatibility_date = "2025-09-01"
+
+# 靜態網頁:Workers Static Assets。/ws 以外的請求都走 assets。
+[assets]
+directory = "dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/ws", "/ws/*"]
+
+# 即時同步:SQLite 型 Durable Object(免費方案唯一可用的類型)
+[[durable_objects.bindings]]
+name = "ROOM"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+# 祕密變數(不要寫進本檔):
+#   npx wrangler secret put TEACHER_PIN
