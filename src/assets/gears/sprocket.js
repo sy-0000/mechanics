@@ -4,7 +4,7 @@ import { polygonExtrude, bevelCylinder } from '../geo.js';
 import { anodizedAluminum, polishedSteel } from '../../materials/metal.js';
 import { addOutline } from '../../materials/outline.js';
 
-export const CHAIN_PITCH = 0.0032; // 場景單位鏈節距(縮小模型)
+export const CHAIN_PITCH = 0.0046; // 場景單位鏈節距(縮小模型)
 
 /** 鏈輪節圓半徑 */
 export function sprocketRadius(z, pitch = CHAIN_PITCH) {

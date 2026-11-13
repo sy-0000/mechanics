@@ -25,3 +25,40 @@ Vitest(與 Vite 同家族,ESM 原生)。Durable Object 測試用 `wrangler dev` 
 `gearProfile` 預設圓周背隙 0.08m(m=模數),符合實務且保證隨機角度下齒形零穿透
 (測試以「邊界取樣穿透深度 × 弧長」估相交面積,門檻 0.1% 齒面積)。
 時鐘站的背隙旋鈕只放大顯示用背隙,不影響運動學比值。
+
+## D-007 額外輔助檔
+第 3 節目錄之外新增:`src/assets/geo.js`(共用幾何)、`src/assets/linkage/barLink.js`(桿件共用建構)、
+`src/scene/interact.js`(滑鼠/手把/手勢共用抓取契約)、`src/teach/typeset.js`(canvas 排版器)、
+`scripts/screenshot.js`、`scripts/subset-font.py`、`tests/do.integration.test.js`。
+理由:避免重複程式;每個零件仍各自一檔、獨立建模。
+
+## D-008 色調映射
+關閉 tone mapping(NoToneMapping):ACES 會把背景 #FEFDF5 壓成土黃,違反 §4 固定背景色。
+地面改用不受光材質(#F8F3E2)+ ShadowMaterial 陰影接收層,維持柔和長影。
+
+## D-009 金屬材質
+MeshToonMaterial 不支援環境貼圖,金屬(鋁/鋼/青銅)改用 MeshStandardMaterial + 程序暖色
+PMREM 環境貼圖(高光隨視角),非金屬用三階 MeshToonMaterial;整體仍為三渲二 + 深棕描邊。
+
+## D-010 托盤齒輪陳列縮尺
+備用齒輪在托盤內以 0.45×(時鐘 0.4×)縮小陳列,避免 40 齒(Ø0.22m)擠爆托盤;
+裝上軸時依齒數原尺寸重建,嚙合與運動學不受影響。腳踏車鏈節距取 0.0046m。
+
+## D-011 效能紀錄(電腦預覽,1280×800,?debug=1)
+| 關卡 | draw calls | 三角形 |
+| --- | --- | --- |
+| 雨刷 | 178–189 | ~105k |
+| 曲柄滑塊 | 157 | ~85k |
+| 肘節夾鉗 | 105 | ~60k |
+| 齒輪基礎 | ~217 | ~152k |
+| 應用:腳踏車 | 67 | ~31k |
+| 應用:時鐘 | 259 | ~258k |
+| 應用:減速機 | 129 | ~83k |
+
+容器內為軟體渲染(llvmpipe)約 20fps,無法代表實機;一般桌機 GPU 以此負載可達 60fps。
+**Quest 3 預估**:最重的時鐘站 ~259 draw/258k tri 接近 Quest 3 建議上限(<200 draw)。
+若實機未達 72fps,依 §4.2 順序:陰影 2048→1024、微塵 60→30、framebufferScaleFactor 0.9。
+全部標註:**待實機確認**。
+
+## D-012 老師端示範的 stage 編碼
+齒輪基礎的控場小示範不佔主流程 stage:stage=10 摩擦輪、stage=11 惰輪(老師頁有獨立按鈕)。
