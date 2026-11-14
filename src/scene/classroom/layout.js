@@ -49,5 +49,5 @@ export const VIEWPOINTS = {
 };
 export const DESKTOP_VIEWS = {
   bench: { eye: [0, 1.58, 0.62], target: [0, 0.9, -0.75] },
-  board: { eye: [0, 1.6, -1.76], target: [0, 1.65, -3.76] },   // 距板面 2.0 m
+  board: { eye: [0, 1.6, -1.15], target: [0, 1.65, -3.76] },   // 電腦版:退到 2.6 m 才看得到整面黑板(VR 站位仍是 2.0 m)
 };

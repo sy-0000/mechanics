@@ -12,14 +12,14 @@ await page.waitForFunction(() => window.__app?.classroom, null, { timeout: 18000
 let bad = 0;
 const dist = await page.evaluate(() => { const b = window.__app.classroom.anchors.boardViewpoint, s = window.__app.classroom.anchors.boardSurface.object; const p = new window.__app.THREE.Vector3(); s.getWorldPosition(p); return Math.abs(p.z - b.position.z); });
 console.log(`看黑板站位到板面:${dist.toFixed(2)} m`); if (Math.abs(dist - 2) > 0.05) bad++;
-for (const id of ['wiper', 'engine', 'crusher', 'gears', 'bike', 'clock', 'driver']) {
+for (const id of (process.env.AIDS ?? 'wiper,engine,crusher,gears,bike,clock,driver').split(',')) {
   await page.evaluate(async id => { const a = window.__app.app; await a.select(id); a.setAdvanced(true); }, id);
   await page.waitForTimeout(6000);
   const m = await page.evaluate(() => window.__app.classroom.board.metrics());
   for (const [z, v] of Object.entries(m)) {
     if (!v) continue;
     const ok = v.minGlyphM >= 0.0399 && !v.overflow; if (!ok) bad++;
-    console.log(`${ok ? 'OK ' : 'BAD'} ${id.padEnd(8)} ${z.padEnd(6)} 最小字高 ${(v.minGlyphM * 100).toFixed(1)} cm、${v.rows} 行、縮放 ${v.scale.toFixed(2)}${v.overflow ? '、溢出' : ''}`);
+    console.log(`${ok ? 'OK ' : 'BAD'} ${id.padEnd(8)} ${z.padEnd(6)} 最小字高 ${(v.minGlyphM * 100).toFixed(1)} cm、${v.rows} 行、縮放 ${v.scale.toFixed(2)}${v.overflow ? '、溢出 ' + JSON.stringify(v.wide) : ''}`);
   }
 }
 await browser.close();

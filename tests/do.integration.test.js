@@ -84,8 +84,19 @@ describe.skipIf(!serverUp)('Durable Object(wrangler dev)', () => {
     expect(b.stage).toBe(1);
   });
 
+  it('全員看黑板 / 回到工作桌、進階數學:每按一次 viewSeq + 1', async () => {
+    teacher.send(enc('cmd', { view: 'board', advanced: true }));
+    const a = await s1.next((m) => m.t === 'state' && m.view === 'board');
+    expect(a.advanced).toBe(true);
+    teacher.send(enc('cmd', { view: 'board' }));
+    const b = await s2.next((m) => m.t === 'state' && m.view === 'board' && m.viewSeq > a.viewSeq);
+    expect(b.viewSeq).toBe(a.viewSeq + 1);
+    teacher.send(enc('cmd', { view: 'bench' }));
+    await s1.next((m) => m.t === 'state' && m.view === 'bench');
+  });
+
   it('名冊包含兩位學生,progress 更新徽章', async () => {
-    s1.send(enc('progress', { level: 'wiper', stage: 2, badges: ['wiper-engineer'] }));
+    s1.send(enc('progress', { level: 'wiper', stage: 2, badges: ['wiper:hand-wipe'] }));
     const r = await teacher.next((m) => m.t === 'roster'
       && m.roster.some((x) => x.clientId === 'it-c1' && x.badges.length === 1));
     const names = r.roster.map((x) => x.name);

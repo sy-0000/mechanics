@@ -234,7 +234,7 @@ export class ChalkZone {
     const add = (tokens, sizeM, color, gapM, extra = {}) => {
       const size = sizeM * ppm;
       const w = layout(ctx, tokens, size, 0, 0, this.values, false).w;
-      const parts = w > maxW ? wrapTokens(ctx, tokens, size, maxW, this.values) : [tokens];
+      const parts = w > maxW ? wrapTokens(ctx, tokens, size, maxW * 0.95, this.values) : [tokens];
       parts.forEach((p, i) => rows.push({ tokens: p, size, color, gap: i === parts.length - 1 ? gapM : st.gap * 0.25, ...(i === 0 ? extra : {}) }));
     };
     if (content.title) add(parseMarkup(content.title), st.title, CHALK_COLORS.white, st.gap * 1.3, { underline: true });
@@ -261,6 +261,7 @@ export class ChalkZone {
       minGlyphM: isFinite(minPx) ? (minPx * scale) / ppm : null,
       overflow: y * scale > H + 1 || rows.some(r => r.w * scale > maxW + 2),
       scale, rows: rows.length,
+      wide: rows.filter(r => r.w * scale > maxW + 2).map(r => `${Math.round(r.w)}/${Math.round(maxW)} ` + r.tokens.map(t => t.s ?? (t.k?.map?.(x => x.s ?? '').join('') ?? t.t)).join('').slice(0, 40)),
     };
     return { items: rows, scale, pad };
   }
