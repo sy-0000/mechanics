@@ -1,0 +1,172 @@
+{
+ "vr": {
+  "classroom": {
+   "calls": 177,
+   "tris": 408796
+  },
+  "aids": {
+   "wiper": {
+    "total": {
+     "calls": 205,
+     "tris": 436128
+    },
+    "delta": 28,
+    "own": {
+     "tris": 13640,
+     "meshes": 14
+    }
+   },
+   "engine": {
+    "total": {
+     "calls": 196,
+     "tris": 429822
+    },
+    "delta": 19,
+    "own": {
+     "tris": 10520,
+     "meshes": 10
+    }
+   },
+   "crusher": {
+    "total": {
+     "calls": 176,
+     "tris": 425622
+    },
+    "delta": -1,
+    "own": {
+     "tris": 9524,
+     "meshes": 9
+    }
+   },
+   "gears": {
+    "total": {
+     "calls": 206,
+     "tris": 436110
+    },
+    "delta": 29,
+    "own": {
+     "tris": 19762,
+     "meshes": 20
+    }
+   },
+   "bike": {
+    "total": {
+     "calls": 195,
+     "tris": 460442
+    },
+    "delta": 18,
+    "own": {
+     "tris": 25832,
+     "meshes": 10
+    }
+   },
+   "clock": {
+    "total": {
+     "calls": 202,
+     "tris": 476920
+    },
+    "delta": 25,
+    "own": {
+     "tris": 46952,
+     "meshes": 16
+    }
+   },
+   "driver": {
+    "total": {
+     "calls": 197,
+     "tris": 433622
+    },
+    "delta": 20,
+    "own": {
+     "tris": 12722,
+     "meshes": 12
+    }
+   }
+  }
+ },
+ "vr-baked": {
+  "classroom": {
+   "calls": 96,
+   "tris": 197014
+  },
+  "aids": {
+   "wiper": {
+    "total": {
+     "calls": 113,
+     "tris": 210756
+    },
+    "delta": 17,
+    "own": {
+     "tris": 13640,
+     "meshes": 14
+    }
+   },
+   "engine": {
+    "total": {
+     "calls": 107,
+     "tris": 207598
+    },
+    "delta": 11,
+    "own": {
+     "tris": 10520,
+     "meshes": 10
+    }
+   },
+   "crusher": {
+    "total": {
+     "calls": 96,
+     "tris": 205434
+    },
+    "delta": 0,
+    "own": {
+     "tris": 9524,
+     "meshes": 9
+    }
+   },
+   "gears": {
+    "total": {
+     "calls": 116,
+     "tris": 216776
+    },
+    "delta": 20,
+    "own": {
+     "tris": 19762,
+     "meshes": 20
+    }
+   },
+   "bike": {
+    "total": {
+     "calls": 106,
+     "tris": 222846
+    },
+    "delta": 10,
+    "own": {
+     "tris": 25832,
+     "meshes": 10
+    }
+   },
+   "clock": {
+    "total": {
+     "calls": 112,
+     "tris": 243966
+    },
+    "delta": 16,
+    "own": {
+     "tris": 46952,
+     "meshes": 16
+    }
+   },
+   "driver": {
+    "total": {
+     "calls": 109,
+     "tris": 209816
+    },
+    "delta": 13,
+    "own": {
+     "tris": 12722,
+     "meshes": 12
+    }
+   }
+  }
+ }
+}
