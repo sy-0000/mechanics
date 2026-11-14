@@ -14,7 +14,7 @@ export function createGearTrainModel(parent, { pos, rot } = {}) {
   // 齒輪:模數一致(齒數 16 / 10 / 13),中心距 = 半徑和
   const gears = [[-0.07, 0.12, 0.056, 16], [0.014, 0.12, 0.035, 10], [0.087, 0.12, 0.045, 13]]; // 中心距 = 節圓半徑和(半徑 − 齒高/2)
   gears.forEach(([x, y, r, t], i) => {
-    mk(g, extrude(gearShape(r, t, 0.007, 0.004), 0.01, 0.0008), gw, { pos: [x, y, z + 0.006], rot: [0, 0, i * 0.17] });
+    mk(g, extrude(gearShape(r, t, 0.007, 0.004), 0.01, 0), gw, { pos: [x, y, z + 0.006], rot: [0, 0, i * 0.17] });
     mk(g, cyl(0.004, 0.004, 0.03, 10), std(C.steel), { pos: [x, y, z + 0.008], rot: [Math.PI / 2, 0, 0] });
     mk(g, cyl(0.009, 0.009, 0.004, 12), std(C.alu), { pos: [x, y, z + 0.022], rot: [Math.PI / 2, 0, 0] });
   });

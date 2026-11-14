@@ -33,6 +33,10 @@ import { createFireExtinguisher } from './fireExtinguisher.js';
 import { createWallSigns } from './wallSigns.js';
 import { createFourBarModel } from './models/fourBarModel.js';
 import { createGearTrainModel } from './models/gearTrainModel.js';
+import { createBroomCabinet } from './broomCabinet.js';
+import { createRecycleBins } from './recycleBins.js';
+import { createWindowPlants } from './windowPlants.js';
+import { createDeskBelongings } from './deskBelongings.js';
 import { createCeilingFan } from './ceilingFan.js';
 import { createViews } from './views.js';
 import { createPostFX } from './postfx.js';
@@ -99,6 +103,11 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
   createBlackboardDetails(details);
   createWallFixtures(details);
   createWallSigns(details);
+  // 第二批:掃具櫃與兩個回收桶是大型物件(vr 保留);課本、筆記本、鉛筆盒、水壺、盆栽、掃把畚箕是小物
+  createBroomCabinet(root, details);
+  createRecycleBins(root);
+  createWindowPlants(details);
+  createDeskBelongings(details);
   details.traverse(o => { o.userData.small = true; });
   const fans = FANS.map(p => createCeilingFan(root, p));
 
@@ -181,7 +190,8 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
     dof.setAllowed(q === 'high');
     const xr = q !== 'high';
     renderer.setPixelRatio(xr ? 1 : Math.min(window.devicePixelRatio, 2));
-    dust?.setCount(q === 'high' ? 260 : q === 'vr' ? 140 : 80);
+    dust?.setCount(q === 'high' ? 260 : q === 'vr' ? 140 : 0);
+    if (dust) dust.mesh.visible = q !== 'vr-baked'; // 烘焙模式關閉微塵(省 1 個 draw call)
     renderer.shadowMap.autoUpdate = q !== 'vr-baked';
     renderer.shadowMap.needsUpdate = true;
     env.setIntensity(q === 'vr-baked' ? 0.7 : 0.55);

@@ -41,13 +41,13 @@ export function createBlackboardDetails(details) {
 
   // 大型三角板(木製,有握把)與黑板圓規,掛在黑板左側牆面
   const wallZ = -3.8 + 0.012;
-  const tri = group(g, 'boardSetSquare', [-2.62, 1.55, wallZ + 0.01]);
+  const tri = group(g, 'boardSetSquare', [-2.95, 1.95, wallZ + 0.01]); // 掛在掃具櫃上方
   const s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(0.6, 0); s.lineTo(0, 0.6 * 0.58); s.closePath();
   const hole = new THREE.Path(); hole.moveTo(0.08, 0.05); hole.lineTo(0.36, 0.05); hole.lineTo(0.08, 0.21); hole.closePath(); s.holes.push(hole);
   mk(tri, extrude(s, 0.008, 0.001), woodMat('#DDC8A6', 'grain'), { rot: [0, 0, 0] });
   mk(tri, rbox(0.1, 0.022, 0.03, 0.008), woodMat(C.woodMid, 'grain'), { pos: [0.16, 0.1, 0.02] });
   mk(tri, cyl(0.004, 0.004, 0.03, 6), std(C.steel), { pos: [0.05, 0.3, -0.005], rot: [Math.PI / 2, 0, 0] });
-  const comp = group(g, 'boardCompass', [-2.95, 2.05, wallZ + 0.02]);
+  const comp = group(g, 'boardCompass', [-2.24, 2.88, wallZ + 0.02]); // 黑板左上方,腳尖高於黑板框
   const wood = woodMat('#D6C09C', 'grain');
   mk(comp, rbox(0.06, 0.06, 0.025, 0.008), wood, {});
   mk(comp, rbox(0.03, 0.08, 0.03, 0.01), wood, { pos: [0, 0.06, 0] });

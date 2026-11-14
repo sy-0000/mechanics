@@ -10,8 +10,8 @@ export function createStools(parent, positions) {
   const seatMat = woodMat(C.woodMid, 'grain', 41), legMat = woodMat(C.woodFrame, 'grain', 43);
   const H = STOOL.height, legLen = H - STOOL.seatT;
   const seats = [], legs = [], rails = [];
-  positions.forEach(([x, , z], i) => {
-    const ry = i * 0.7;
+  positions.forEach(([x, , z, yaw = 0]) => {
+    const ry = yaw;
     seats.push({ pos: [x, H - STOOL.seatT / 2, z], rot: [0, ry, 0] });
     for (let k = 0; k < 4; k++) {
       const a = ry + Math.PI / 4 + k * Math.PI / 2, r = 0.115;

@@ -58,3 +58,6 @@
 
 ## 音效
 - 全部 Web Audio 即時合成;`assets/audio/<名稱>.(mp3|ogg|wav|m4a)` 存在時改播音檔(Vite `import.meta.glob`,沒有檔案時不影響建置)。名稱表在 `assets/audio/README.md`。
+
+## 教室後續更新的合併
+- 教室分支 `claude/cool-rubin-afx0ne` 在整合後又有 7 個提交(第二批細節與預算修正)。兩個分支沒有共同歷史,所以不用 git merge,而是把 `aa4de36..ee19534` 的差異以 3-way patch 套進整合版;全部乾淨套用,整合版對 `index.js`、`layout.js`、`chalkWriter.js` 的修改都保留。新增的學生桌水壺在 (0.72, −0.2),位於教具掛載區與彩蛋入口之外。合併後重新量測,數字更新在 `progress.md`。
