@@ -1,0 +1,26 @@
+{
+  "name": "mechanics",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "國中生活科技教室 VR:寫實教室 + 機構教具(雨刷、引擎、壓罐機、齒輪、腳踏車、時鐘、電動起子)",
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "build": "vite build",
+    "preview": "vite preview",
+    "preview:worker": "npm run build && wrangler dev",
+    "loadtest": "node scripts/loadtest.js",
+    "palette": "node scripts/check-palette.mjs",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.11",
+    "vitest": "2.1.8",
+    "wrangler": "4.42.0",
+    "ws": "8.18.0"
+  }
+}
