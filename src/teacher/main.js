@@ -1,15 +1,14 @@
 // 老師控場頁(DOM 介面)。
-import { decode, teacher, LEVELS } from '../net/protocol.js';
-import { BADGES } from '../teach/badges.js';
+import { decode, teacher, ALL_AIDS } from '../net/protocol.js';
+import { BADGES } from '../teach/missions.js';
 
-const LEVEL_LABELS = { wiper: '雨刷', sliderCrank: '引擎', gearBasics: '齒輪', gearApps: '應用' };
+const LEVEL_LABELS = { wiper: '雨刷', engine: '引擎', gears: '齒輪', bike: '腳踏車', clock: '時鐘', driver: '電動起子', crusher: '壓罐機(彩蛋)' };
+// 老師帶的步驟(stage 編號與教具模組一致)
 const STAGE_LABELS = {
-  wiper: ['① 結構', '② 機構', '③ 機器'],
-  sliderCrank: ['引擎'],
-  gearBasics: ['① 問題', '② 弧長', '③ 力矩', '④ 取捨'],
-  gearApps: ['① 腳踏車', '② 時鐘', '③ 減速機'],
+  wiper: [['① 結構', 0], ['② 機構', 1], ['③ 機器', 2]],
+  gears: [['① 問題', 0], ['② 弧長', 1], ['③ 力矩', 2], ['④ 取捨', 3]],
 };
-const DEMOS = { gearBasics: [['摩擦輪示範', 10], ['惰輪示範', 11]] };
+const DEMOS = { gears: [['摩擦輪示範', 10], ['惰輪示範', 11]] };
 
 const style = document.createElement('style');
 style.textContent = `
@@ -104,20 +103,19 @@ function render() {
       <button id="recenter">全員重新定位</button>
     </div>
     <div class="card row" id="levels">
-      ${LEVELS.map((l) => `
+      ${ALL_AIDS.map((l) => `
         <button data-level="${l}" class="${lv === l ? 'active' : ''}">${LEVEL_LABELS[l]}</button>`).join('')}
       <span style="width:16px"></span>
-      ${stages.map((s, i) => `
-        <button data-stage="${i}" class="${(state.stage || 0) === i ? 'active' : ''}">${s}</button>`).join('')}
+      ${stages.map(([s, i]) => `
+        <button data-stage="${i}" class="${(state.stage ?? 0) === i ? 'active' : ''}">${s}</button>`).join('')}
       ${demos.map(([name, id]) => `<button data-stage="${id}">${name}</button>`).join('')}
     </div>
     <div class="card row">
-      <button id="scrollBtn" class="${state.scroll?.open ? 'active' : ''}">全員卷軸 ${state.scroll?.open ? '開' : '關'}</button>
-      <button id="pgPrev">上一頁</button>
-      <span>第 ${(state.scroll?.page ?? 0) + 1} 頁</span>
-      <button id="pgNext">下一頁</button>
+      <button id="boardBtn" class="${state.view === 'board' ? 'active' : ''}">全員看黑板</button>
+      <button id="benchBtn" class="${state.view !== 'board' ? 'active' : ''}">全員回到工作桌</button>
       <span style="width:16px"></span>
-      <button id="bpBtn" class="${state.blueprint ? 'active' : ''}">藍圖模式 ${state.blueprint ? '開' : '關'}</button>
+      <button id="advBtn" class="${state.advanced ? 'active' : ''}">進階數學 ${state.advanced ? '開' : '關'}</button>
+      <span class="hint">(跟隨模式時全員同步)</span>
       <span style="flex:1"></span>
       <label class="inline">音量
         <input id="volume" type="range" min="0" max="1" step="0.05" value="${state.volume ?? 0.8}">
@@ -152,7 +150,7 @@ function render() {
           <div class="student">
             <h3>${esc(r.name)}</h3>
             ${BADGES.map((b) => `
-              <span class="coin ${r.badges.includes(b.id) ? '' : 'dim'}" title="${b.name}:${b.desc}">${b.icon}</span>`).join('')}
+              <span class="coin ${r.badges.includes(b.id) ? '' : 'dim'}" title="${LEVEL_LABELS[b.aid]}・${b.mission}|${b.name}:${b.desc}">${b.icon}</span>`).join('')}
           </div>`).join('')}
       </div>
     </div>`;
@@ -163,18 +161,15 @@ function render() {
   });
   app.querySelector('#recenter').onclick = () => ws?.send(teacher.recenter('all'));
   app.querySelectorAll('[data-level]').forEach((b) => {
-    b.onclick = () => cmd({ level: b.dataset.level, stage: 0 });
+    const def = { wiper: 1, gears: 3 }[b.dataset.level] ?? 0;
+    b.onclick = () => cmd({ level: b.dataset.level, stage: def });
   });
   app.querySelectorAll('[data-stage]').forEach((b) => {
     b.onclick = () => cmd({ stage: Number(b.dataset.stage) });
   });
-  app.querySelector('#scrollBtn').onclick = () =>
-    cmd({ scroll: { open: !state.scroll?.open, page: state.scroll?.page ?? 0 } });
-  app.querySelector('#pgPrev').onclick = () =>
-    cmd({ scroll: { open: true, page: Math.max(0, (state.scroll?.page ?? 0) - 1) } });
-  app.querySelector('#pgNext').onclick = () =>
-    cmd({ scroll: { open: true, page: (state.scroll?.page ?? 0) + 1 } });
-  app.querySelector('#bpBtn').onclick = () => cmd({ blueprint: !state.blueprint });
+  app.querySelector('#boardBtn').onclick = () => cmd({ view: 'board' });
+  app.querySelector('#benchBtn').onclick = () => cmd({ view: 'bench' });
+  app.querySelector('#advBtn').onclick = () => cmd({ advanced: !state.advanced });
   app.querySelector('#volume').oninput = (e) => cmd({ volume: Number(e.target.value) });
   app.querySelector('#muteBtn').onclick = () => cmd({ muted: !state.muted });
   app.querySelector('#wallBtn').onclick = () => {

@@ -149,3 +149,55 @@ export function searchDefaultDimensions() {
 /** 雨刷關卡預設尺寸(由 searchDefaultDimensions() 求得,見 docs/decisions.md)
  * 曲柄搖桿;擺角 88.16°;最小傳動角 43.65°。單位:模型 mm。 */
 export const WIPER_DEFAULT = Object.freeze({ r1: 130, r2: 32, r3: 126, r4: 46 });
+
+// ───────────── 整合版擴充(公分;d 機架、a 曲柄、b 連桿、c 搖桿) ─────────────
+
+/**
+ * 依整合提示詞 3.1 的分類規則(s 最短、l 最長、p q 另外兩根):
+ *  s+l < p+q:最短是曲柄或搖桿 → 曲柄搖桿;最短是機架 → 雙曲柄;最短是連桿 → 雙搖桿
+ *  s+l = p+q:變點機構(會卡住);s+l > p+q:三搖桿
+ * 同長時依「機架、曲柄、連桿、搖桿」的順序取最短。
+ */
+export function classify(d, a, b, c) {
+  const links = [{ len: d, name: 'ground' }, { len: a, name: 'input' }, { len: b, name: 'coupler' }, { len: c, name: 'output' }];
+  const sorted = [...links].sort((x, y) => x.len - y.len);
+  const s = sorted[0], l = sorted[3], pq = sorted[1].len + sorted[2].len, sl = s.len + l.len;
+  const EPS = 1e-9;
+  let type;
+  if (sl > pq + EPS) type = 'triple-rocker';
+  else if (Math.abs(sl - pq) <= EPS) type = 'change-point';
+  else if (s.name === 'input' || s.name === 'output') type = 'crank-rocker';
+  else if (s.name === 'ground') type = 'double-crank';
+  else type = 'double-rocker';
+  return { type, s: s.len, l: l.len, p: sorted[1].len, q: sorted[2].len, shortest: s.name };
+}
+
+export const TYPE_NAMES = Object.freeze({
+  'crank-rocker': '曲柄搖桿', 'double-crank': '雙曲柄', 'double-rocker': '雙搖桿',
+  'change-point': '變點機構(會卡住)', 'triple-rocker': '三搖桿',
+});
+
+/** 四根桿裝不裝得起來:最長桿 < 其他三根的和。 */
+export function assemblable(d, a, b, c) {
+  const L = [d, a, b, c].sort((x, y) => x - y);
+  return L[3] < L[0] + L[1] + L[2];
+}
+
+/**
+ * 預設尺寸搜尋(整數公分):曲柄搖桿、擺動角 swingMin–swingMax、最小傳動角 ≥ muMin。
+ * 取最小傳動角最大者(同分取擺動角較大者)。找不到回傳 null。
+ */
+export function searchWiperDefault({ ranges, swingMin, swingMax, muMin }) {
+  let best = null;
+  for (let d = ranges.d[0]; d <= ranges.d[1]; d++)
+    for (let a = ranges.a[0]; a <= ranges.a[1]; a++)
+      for (let b = ranges.b[0]; b <= ranges.b[1]; b++)
+        for (let c = ranges.c[0]; c <= ranges.c[1]; c++) {
+          if (classify(d, a, b, c).type !== 'crank-rocker' || a > c) continue; // 曲柄必須是最短桿
+          const lim = rockerLimits(d, a, b, c); if (!lim) continue;
+          const swing = lim.swing / DEG; if (swing < swingMin || swing > swingMax) continue;
+          const mu = minTransmissionAngle(d, a, b, c) / DEG; if (mu < muMin) continue;
+          if (!best || mu > best.muMin + 1e-9 || (Math.abs(mu - best.muMin) < 1e-9 && swing > best.swing)) best = { d, a, b, c, swing, muMin: mu };
+        }
+  return best;
+}

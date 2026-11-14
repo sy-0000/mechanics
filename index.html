@@ -3,13 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>生科教室</title>
+  <title>機構教室</title>
   <style>
+    @font-face { font-family: "WorkshopTC"; src: url("./fonts/noto-tc-subset.woff2") format("woff2"); }
     html, body { margin: 0; height: 100%; overflow: hidden; background: #FEFDF5; }
     canvas { display: block; }
     #vr { position: fixed; right: 16px; bottom: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0;
-          background: rgba(46,50,48,0.75); display: none; cursor: pointer; padding: 0; }
+          background: rgba(46,50,48,0.75); display: none; cursor: pointer; padding: 0; z-index: 4; }
     #vr svg { width: 26px; height: 26px; }
+    #start { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.1rem;
+             padding: 2rem; box-sizing: border-box; color: #3B3631; font-family: "WorkshopTC", "Noto Sans TC", system-ui, sans-serif; background: #FEFDF5; z-index: 10; }
+    #start h1 { font-size: 2rem; letter-spacing: 0.12em; margin: 0; }
+    #start .sub { color: #7A6E60; margin: 0; }
+    #start label { display: flex; flex-direction: column; gap: 0.4rem; width: min(320px, 82vw); font-size: 1.05rem; }
+    #start input { font-size: 1.25rem; padding: 0.6rem 0.9rem; border: 2px solid #CFC3AE; border-radius: 10px; background: #FFFDF6; color: #3B3631; outline: none; }
+    #start input:focus { border-color: #8F7B66; }
+    #start button { font-size: 1.3rem; padding: 0.8rem 2.4rem; border: none; border-radius: 12px; background: #2E3230; color: #F2EFE6; cursor: pointer; font-family: inherit; }
+    #start button:disabled { background: #B8B2A6; cursor: not-allowed; }
+    #start .hint { font-size: 0.95rem; color: #7A6E60; margin: 0; text-align: center; }
   </style>
 </head>
 <body>

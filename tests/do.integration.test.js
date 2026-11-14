@@ -75,12 +75,12 @@ describe.skipIf(!serverUp)('Durable Object(wrangler dev)', () => {
   });
 
   it('老師指令廣播到所有學生', async () => {
-    teacher.send(enc('cmd', { mode: 'follow', level: 'gearBasics', stage: 1 }));
+    teacher.send(enc('cmd', { mode: 'follow', level: 'gears', stage: 1 }));
     const [a, b] = await Promise.all([
       s1.next((m) => m.t === 'state' && m.mode === 'follow'),
       s2.next((m) => m.t === 'state' && m.mode === 'follow'),
     ]);
-    expect(a.level).toBe('gearBasics');
+    expect(a.level).toBe('gears');
     expect(b.stage).toBe(1);
   });
 

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import fontUrl from '../../assets/fonts/chalk-tc.woff2?url';
+import symUrl from '../../assets/fonts/greek-sym.woff2?url';
 import { rng } from '../../materials/canvasTex.js';
 
 // 粉筆排版器:把 { title, lines:[{text, chalk, live}] } 以手寫粉筆質感畫到黑板分區的 canvas 上。
@@ -12,14 +13,17 @@ export const CHALK_COLORS = {
   green: '#B4D0B6',  // 淡綠:輸出件
   blue: '#B2C8DC',   // 淡藍:角度與弧線
 };
-const FAMILY = `"ChalkTC", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif`;
+const FAMILY = `"ChalkTC", "ChalkSym", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "WenQuanYi Zen Hei", sans-serif`;
 
 let fontReady = null;
 export function loadChalkFont() {
   if (fontReady) return fontReady;
   if (typeof FontFace === 'undefined') return (fontReady = Promise.resolve(false));
   const ff = new FontFace('ChalkTC', `url(${fontUrl})`);
-  fontReady = ff.load().then(f => { document.fonts.add(f); return true; }).catch(() => false);
+  // 希臘字母(θ、μ、φ…)粉筆字型沒有,另外打包 Noto Sans TC 的希臘字母子集作為逐字退回字型(OFL)
+  const sym = new FontFace('ChalkSym', `url(${symUrl})`);
+  fontReady = Promise.all([ff.load().then(f => { document.fonts.add(f); return true; }).catch(() => false),
+    sym.load().then(f => { document.fonts.add(f); return true; }).catch(() => false)]).then(r => r[0]);
   return fontReady;
 }
 
@@ -37,7 +41,8 @@ export function parseMarkup(text) {
   };
   while (i < text.length) {
     const ch = text[i];
-    if (text.startsWith('\\frac', i)) { flush(); i += 5; const a = group(), b = group(); out.push({ t: 'frac', a: parseMarkup(a), b: parseMarkup(b) }); }
+    if (text.startsWith('\\color', i)) { flush(); i += 6; const c = group(), body = group(); out.push({ t: 'col', c, k: parseMarkup(body) }); }
+    else if (text.startsWith('\\frac', i)) { flush(); i += 5; const a = group(), b = group(); out.push({ t: 'frac', a: parseMarkup(a), b: parseMarkup(b) }); }
     else if (ch === '^' || ch === '_') { flush(); i++; out.push({ t: ch === '^' ? 'sup' : 'sub', c: parseMarkup(group()) }); }
     else if (ch === '{') {
       const m = /^\{([A-Za-z_][\w.]*)\}/.exec(text.slice(i));
@@ -54,23 +59,45 @@ function fmt(v) {
   return String(v);
 }
 
+/** 粉筆畫的 ✔ / ✘(寬約 0.95 字)。 */
+function drawMark(ctx, ch, x, y, size) {
+  ctx.save(); ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = size * 0.11; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  if (ch === '✔') { ctx.moveTo(x + size * 0.12, y - size * 0.32); ctx.lineTo(x + size * 0.36, y - size * 0.06); ctx.lineTo(x + size * 0.82, y - size * 0.7); }
+  else { ctx.moveTo(x + size * 0.16, y - size * 0.66); ctx.lineTo(x + size * 0.76, y - size * 0.04); ctx.moveTo(x + size * 0.76, y - size * 0.66); ctx.lineTo(x + size * 0.16, y - size * 0.04); }
+  ctx.stroke(); ctx.restore();
+}
+
 /** 量測 token 串:回傳 {w, asc, desc}(像素)。draw=true 時同時繪製。 */
 function layout(ctx, tokens, size, x, y, values, draw) {
-  let w = 0, asc = size * 0.82, desc = size * 0.22;
+  let w = 0, asc = size * 0.82, desc = size * 0.22, min = Infinity;
   for (const tk of tokens) {
     if (tk.t === 'txt' || tk.t === 'var') {
       const s = tk.t === 'txt' ? tk.s : fmt(values[tk.k]);
       ctx.font = `${size}px ${FAMILY}`;
-      if (draw) ctx.fillText(s, x + w, y);
-      w += ctx.measureText(s).width;
+      // ✔ ✘ 不依賴字型:直接畫粉筆筆畫(各平台字型不一定有這兩個符號)
+      for (const part of s.split(/([✔✘])/)) {
+        if (!part) continue;
+        if (part === '✔' || part === '✘') { if (draw) drawMark(ctx, part, x + w, y, size); w += size * 0.95; continue; }
+        if (draw) ctx.fillText(part, x + w, y);
+        w += ctx.measureText(part).width;
+      }
+      if (s.trim()) min = Math.min(min, size);
+    } else if (tk.t === 'col') {
+      const prev = ctx.fillStyle;
+      if (draw) ctx.fillStyle = CHALK_COLORS[tk.c] ?? tk.c;
+      const m = layout(ctx, tk.k, size, x + w, y, values, draw);
+      if (draw) ctx.fillStyle = prev;
+      w += m.w; asc = Math.max(asc, m.asc); desc = Math.max(desc, m.desc); min = Math.min(min, m.min);
     } else if (tk.t === 'sup' || tk.t === 'sub') {
       const s2 = size * 0.62, dy = tk.t === 'sup' ? -size * 0.42 : size * 0.2;
       const m = layout(ctx, tk.c, s2, x + w + size * 0.02, y + dy, values, draw);
-      w += m.w + size * 0.06;
+      w += m.w + size * 0.06; min = Math.min(min, m.min);
       if (tk.t === 'sup') asc = Math.max(asc, size * 0.42 + m.asc); else desc = Math.max(desc, size * 0.2 + m.desc);
     } else if (tk.t === 'frac') {
       const s2 = size * 0.78;
       const ma = layout(ctx, tk.a, s2, 0, 0, values, false), mb = layout(ctx, tk.b, s2, 0, 0, values, false);
+      min = Math.min(min, ma.min, mb.min);
       const fw = Math.max(ma.w, mb.w) + size * 0.25, barY = y - size * 0.3;
       if (draw) {
         layout(ctx, tk.a, s2, x + w + (fw - ma.w) / 2, barY - size * 0.14 - ma.desc, values, true);
@@ -82,7 +109,7 @@ function layout(ctx, tokens, size, x, y, values, draw) {
       w += fw + size * 0.08;
     }
   }
-  return { w, asc, desc };
+  return { w, asc, desc, min };
 }
 
 /** 以字串換行(中文逐字、英文以空白)。只處理純文字行。 */
@@ -99,6 +126,36 @@ function wrap(ctx, text, size, maxW) {
   }
   if (cur) lines.push(cur);
   return lines;
+}
+
+
+/** 最小字高(公尺):「看黑板」站位 2 m 時仍可讀。上下標也算在內。 */
+export const MIN_GLYPH_M = 0.04;
+const CJK = /[⺀-鿿豈-﫿＀-￯　-〿]/;
+const NO_HEAD = /^[,。、;:,.;:)」』!?!?]$/;
+/** 把含標記的一行拆成可換行的單位(中文逐字、英數一段、上下標與分數黏在前一個單位),再貪婪換行。 */
+function wrapTokens(ctx, tokens, size, maxW, values) {
+  const atoms = [];
+  for (const tk of tokens) {
+    if (tk.t === 'txt') {
+      for (const piece of tk.s.match(/[⺀-鿿豈-﫿＀-￯　-〿]|[^\s⺀-鿿豈-﫿＀-￯　-〿]+|\s+/g) ?? []) {
+        if (atoms.length && NO_HEAD.test(piece)) atoms[atoms.length - 1].push({ t: 'txt', s: piece });
+        else atoms.push([{ t: 'txt', s: piece }]);
+      }
+    } else if ((tk.t === 'sub' || tk.t === 'sup') && atoms.length) atoms[atoms.length - 1].push(tk);
+    else atoms.push([tk]);
+  }
+  const rows = []; let cur = [], curW = 0;
+  const indent = [{ t: 'txt', s: '　' }], indW = layout(ctx, indent, size, 0, 0, values, false).w;
+  for (const a of atoms) {
+    const blank = a.length === 1 && a[0].t === 'txt' && !a[0].s.trim();
+    const w = layout(ctx, a, size, 0, 0, values, false).w;
+    if (cur.length && curW + w > maxW && !blank) { rows.push(cur); cur = [...indent]; curW = indW; }
+    if (blank && cur.length <= 1 && rows.length) continue;
+    cur.push(...a); curW += w;
+  }
+  if (cur.length) rows.push(cur);
+  return rows;
 }
 
 /**
@@ -169,33 +226,43 @@ export class ChalkZone {
     g.globalCompositeOperation = 'source-over';
   }
 
-  /** 排版:回傳 [{tokens|string, size, color, y, h}]。 */
+  /** 排版:回傳 {items, scale, pad}。太寬的行自動換行;太長時先縮行距、再縮字,但最小字高不低於 MIN_GLYPH_M。 */
   build(content) {
     const ctx = this.ctx, ppm = this.ppm, st = this.style;
-    const pad = st.pad * ppm, maxW = this.canvas.width - pad * 2;
-    const items = []; let y = pad;
-    const push = (tokens, sizeM, color, gapM) => {
-      const size = sizeM * ppm, m = layout(ctx, tokens, size, 0, 0, this.values, false);
-      y += m.asc; items.push({ tokens, size, color, y, w: m.w }); y += m.desc + gapM * ppm;
+    const pad = st.pad * ppm, maxW = this.canvas.width - pad * 2, H = this.canvas.height - pad;
+    const rows = [];
+    const add = (tokens, sizeM, color, gapM, extra = {}) => {
+      const size = sizeM * ppm;
+      const w = layout(ctx, tokens, size, 0, 0, this.values, false).w;
+      const parts = w > maxW ? wrapTokens(ctx, tokens, size, maxW, this.values) : [tokens];
+      parts.forEach((p, i) => rows.push({ tokens: p, size, color, gap: i === parts.length - 1 ? gapM : st.gap * 0.25, ...(i === 0 ? extra : {}) }));
     };
-    if (content.title) {
-      const tks = parseMarkup(content.title);
-      push(tks, st.title, CHALK_COLORS.white, st.gap * 1.3);
-      items[items.length - 1].underline = true;
-    }
+    if (content.title) add(parseMarkup(content.title), st.title, CHALK_COLORS.white, st.gap * 1.3, { underline: true });
     for (const line of content.lines ?? []) {
       const color = CHALK_COLORS[line.chalk] ?? CHALK_COLORS.white;
       const size = (line.live ? st.live : st.line);
       const plain = !/[\\^_{]/.test(line.text);
       if (plain && st.wrap) {
-        const parts = wrap(ctx, line.text, size * ppm, maxW);
-        parts.forEach((p, i) => push([{ t: 'txt', s: (i ? '　' : '') + p }], size, color, i === parts.length - 1 ? st.gap : st.gap * 0.25));
-      } else push(parseMarkup(line.text), size, color, st.gap);
+        const parts = wrap(ctx, line.text, size * ppm, maxW - size * ppm * 1.05); // 留一個字給續行的縮排
+        parts.forEach((p, i) => rows.push({ tokens: [{ t: 'txt', s: (i ? '　' : '') + p }], size: size * ppm, color, gap: i === parts.length - 1 ? st.gap : st.gap * 0.25 }));
+      } else add(parseMarkup(line.text), size, color, st.gap);
     }
-    // 內容過長時整體縮放(不低於 75%)
-    const H = this.canvas.height - pad;
-    const scale = y > H ? Math.max(0.75, H / y) : 1;
-    return { items, scale, pad };
+    const place = k => {
+      let y = pad;
+      for (const r of rows) { const m = layout(ctx, r.tokens, r.size, 0, 0, this.values, false); y += m.asc; r.y = y; r.w = m.w; r.min = m.min; y += m.desc + r.gap * k * ppm; }
+      return y;
+    };
+    let y = place(1);
+    for (const k of [0.75, 0.55, 0.4, 0.3]) { if (y <= H) break; y = place(k); }
+    const minPx = Math.min(...rows.map(r => r.min).filter(isFinite));
+    const minScale = isFinite(minPx) ? Math.min(1, (MIN_GLYPH_M * ppm) / minPx) : 1;
+    const scale = y > H ? Math.max(minScale, H / y) : 1;
+    this.metrics = {
+      minGlyphM: isFinite(minPx) ? (minPx * scale) / ppm : null,
+      overflow: y * scale > H + 1 || rows.some(r => r.w * scale > maxW + 2),
+      scale, rows: rows.length,
+    };
+    return { items: rows, scale, pad };
   }
 
   render(content, writeK, eraseK) {

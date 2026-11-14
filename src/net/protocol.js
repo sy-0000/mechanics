@@ -6,8 +6,12 @@ export const MAX_NAME_LEN = 12;
 export const RATE_LIMIT_PER_SEC = 10;
 export const HEARTBEAT_MS = 15000;
 
-export const LEVELS = ['wiper', 'sliderCrank', 'gearBasics', 'gearApps'];
-export const BONUS_LEVEL = 'toggleClamp';
+/** 六個教具(依上課順序)與彩蛋。 */
+export const LEVELS = ['wiper', 'engine', 'gears', 'bike', 'clock', 'driver'];
+export const BONUS_LEVEL = 'crusher';
+export const ALL_AIDS = [...LEVELS, BONUS_LEVEL];
+/** 老師指令可以改的欄位(卷軸已移除,改成黑板:view = 'board' | 'bench',每按一次 viewSeq + 1)。 */
+export const CMD_KEYS = ['mode', 'level', 'stage', 'view', 'viewSeq', 'advanced', 'volume', 'muted'];
 export const MODES = ['free', 'follow', 'pause'];
 
 /** 名字清理:去除 HTML 與控制字元,最長 12 字 */
@@ -99,9 +103,10 @@ export function defaultState() {
   return {
     mode: 'free',
     level: 'wiper',
-    stage: 0,
-    scroll: { open: false, page: 0 },
-    blueprint: false,
+    stage: 1,
+    view: 'bench',
+    viewSeq: 0,
+    advanced: false,
     volume: 0.8,
     muted: false,
     seq: 0,

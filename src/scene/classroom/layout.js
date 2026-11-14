@@ -45,9 +45,9 @@ export const FANS = [[0, 3.0, -1.6], [0, 3.0, 1.8]];
 
 export const VIEWPOINTS = {
   bench: { position: [0, 0, 0], yaw: 0 },        // 面向 −Z(工作桌與黑板)
-  board: { position: [0, 0, -2.1], yaw: 0 },     // 講桌前方,正對黑板
+  board: { position: [0, 0, -1.76], yaw: 0 },    // 講桌前方,正對黑板;距黑板板面 2.0 m(最小字高 4 cm 的可讀距離)
 };
 export const DESKTOP_VIEWS = {
   bench: { eye: [0, 1.58, 0.62], target: [0, 0.9, -0.75] },
-  board: { eye: [0, 1.6, -1.15], target: [0, 1.65, -3.76] },
+  board: { eye: [0, 1.6, -1.76], target: [0, 1.65, -3.76] },   // 距板面 2.0 m
 };

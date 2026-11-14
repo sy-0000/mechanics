@@ -159,6 +159,10 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
     updateValues(values) { pendingValues = { ...(pendingValues ?? {}), ...values }; },
     /** 便利函式:進階數學開關(開啟時寫右區,關閉時擦掉)。 */
     setAdvanced(on, content) { return on ? boardApi.setZone('right', content) : boardApi.clearZones(['right']); },
+    /** 排版量測(整合用):各分區最小字高(公尺)、是否溢出。 */
+    metrics() { return Object.fromEntries(Object.entries(zones).map(([k, z]) => [k, z.metrics ?? null])); },
+    /** 目前各分區的內容(整合測試用)。 */
+    content(name) { return zones[name]?.anim?.next ?? zones[name]?.content ?? null; },
   };
   boardApi.setZone('left', opts.leftZone ?? DEFAULT_LEFT);
 
@@ -227,8 +231,8 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
   }
 
   return {
-    anchors, board: boardApi, views: { goTo: views.goTo, onChange: views.onChange, get current() { return views.current; } }, menu: {
-      setItems: menu.setItems, open: menu.open, close: menu.close, toggle: menu.toggle,
+    anchors, board: boardApi, views: { goTo: views.goTo, onChange: views.onChange, get current() { return views.current; }, get moving() { return views.moving; }, controls: views.controls }, menu: {
+      setItems: menu.setItems, open: menu.open, close: menu.close, toggle: menu.toggle, get isOpen() { return menu.isOpen; }, panel: menu.panel,
       onSelect(cb) { return menu.onSelect(sel => { if (sel.type === 'teachingAid') cb(sel.id, sel.item); }); },
     },
     setQuality, get quality() { return quality; },

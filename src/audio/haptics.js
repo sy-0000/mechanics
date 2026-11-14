@@ -1,32 +1,24 @@
-// 手把震動(手勢模式無硬體,靜默略過)。同一種震動至少間隔 25ms。
+// 手把震動。手部追蹤沒有震動硬體,所以每個震動事件都同時有畫面與聲音回饋(由教具負責)。
+// 同一種震動至少間隔 25 ms。
 const PATTERNS = {
-  grab: { intensity: 0.4, duration: 20 },
-  button: { intensity: 0.5, duration: 25 },
-  tooth: { intensity: 0.15, duration: 10 },
-  deadCenter: { intensity: 1.0, duration: 120 },
-  lock: { intensity: 0.9, duration: 60 },
-  jam: { intensity: 0.6, duration: 80 },
-  stamp: { intensity: 0.35, duration: 40 },
-  detent: { intensity: 0.3, duration: 18 },
+  grab: [0.35, 20], button: [0.5, 25], detent: [0.3, 18], tooth: [0.12, 10],
+  deadCenter: [1.0, 120], deadHum: [0.55, 40], ignite: [0.9, 90], knock: [0.7, 60],
+  lock: [0.9, 60], jam: [0.6, 80], crush: [1.0, 160], stamp: [0.35, 40], limit: [0.5, 50],
 };
 
 export function createHaptics(renderer) {
-  const last = new Map(); // `${hand}:${kind}` → time
-  function pulse(hand, kind) {
-    const p = PATTERNS[kind];
-    if (!p) return;
-    const key = `${hand}:${kind}`;
-    const now = performance.now();
-    if (now - (last.get(key) || 0) < 25) return; // 25ms 節流
+  const last = new Map();
+  /** hand:0 / 1 / 'both';kind:PATTERNS 的鍵;scale:強度倍率。 */
+  function pulse(hand, kind, scale = 1) {
+    const p = PATTERNS[kind]; if (!p) return;
+    const key = `${hand}:${kind}`, now = performance.now();
+    if (now - (last.get(key) ?? 0) < 25) return;
     last.set(key, now);
-    const session = renderer?.xr?.getSession?.();
-    if (!session) return;
-    const sources = session.inputSources;
+    const session = renderer?.xr?.getSession?.(); if (!session) return;
     let i = 0;
-    for (const src of sources) {
-      if ((hand === 'both' || i === hand) && src.gamepad?.hapticActuators?.[0]) {
-        try { src.gamepad.hapticActuators[0].pulse(p.intensity, p.duration); } catch { /* 不支援 */ }
-      }
+    for (const src of session.inputSources) {
+      const act = src.gamepad?.hapticActuators?.[0];
+      if ((hand === 'both' || hand === i) && act) { try { act.pulse(Math.min(1, p[0] * scale), p[1]); } catch { /* 不支援 */ } }
       i++;
     }
   }

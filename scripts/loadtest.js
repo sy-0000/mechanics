@@ -15,7 +15,7 @@ const N = Number(args.n) || 20;
 
 const BADGE_IDS = ['wiper-engineer', 'grashof-detective', 'engine-ignite', 'deadpoint-hunter',
   'lock-master', 'strongman', 'tradeoff', 'gear-shifter', 'clockmaker'];
-const LEVELS = ['wiper', 'sliderCrank', 'gearBasics', 'gearApps'];
+const LEVELS = ['wiper', 'engine', 'gears', 'bike', 'clock', 'driver'];
 const V = 1;
 const enc = (t, p = {}) => JSON.stringify({ t, v: V, ...p });
 

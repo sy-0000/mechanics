@@ -71,12 +71,14 @@ describe('協定:預設狀態與訊息建構', () => {
     const s = defaultState();
     expect(s.mode).toBe('free');
     expect(s.level).toBe('wiper');
-    expect(s.scroll).toEqual({ open: false, page: 0 });
+    expect(s.view).toBe('bench');
+    expect(s.advanced).toBe(false);
+    expect(s).not.toHaveProperty('scroll');
   });
   it('teacher.cmd 可編碼完整指令', () => {
     const { ok, msg } = decode(teacher.cmd({
-      mode: 'follow', level: 'gearBasics', stage: 1,
-      scroll: { open: true, page: 2 }, blueprint: false, volume: 0.5, muted: false,
+      mode: 'follow', level: 'gears', stage: 1,
+      view: 'board', advanced: true, volume: 0.5, muted: false,
     }));
     expect(ok).toBe(true);
     expect(msg.mode).toBe('follow');

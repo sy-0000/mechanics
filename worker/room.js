@@ -2,7 +2,7 @@
 // 最後活動 24 小時後 alarm 自動刪除全部資料。
 import { DurableObject } from 'cloudflare:workers';
 import {
-  decode, server, sanitizeName, defaultState,
+  decode, server, sanitizeName, defaultState, CMD_KEYS,
   MAX_MESSAGE_BYTES, RATE_LIMIT_PER_SEC,
 } from '../src/net/protocol.js';
 
@@ -125,9 +125,10 @@ export class Room extends DurableObject {
     switch (msg.t) {
       case 'cmd': {
         const s = this.getState();
-        for (const k of ['mode', 'level', 'stage', 'scroll', 'blueprint', 'volume', 'muted']) {
+        for (const k of CMD_KEYS) {
           if (msg[k] !== undefined) s[k] = msg[k];
         }
+        if (msg.view !== undefined) s.viewSeq = (s.viewSeq || 0) + 1; // 每次「全員看黑板 / 回到工作桌」都重新觸發
         s.seq = (s.seq || 0) + 1;
         this.setState(s);
         this.broadcast('student', server.state(s));

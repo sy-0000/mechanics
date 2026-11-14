@@ -18,15 +18,16 @@ const _plane = new THREE.Plane();
 const _ray = new THREE.Ray();
 
 export function createInteractionManager() {
-  let root = null;
+  let roots = [];
   let grabbables = [];
   let touchables = [];
 
-  function refresh(newRoot) {
-    if (newRoot) root = newRoot;
+  /** 重新收集可互動物件。newRoots:單一 Object3D 或陣列(教具根節點 + 教室的彩蛋入口)。 */
+  function refresh(newRoots) {
+    if (newRoots) roots = (Array.isArray(newRoots) ? newRoots : [newRoots]).filter(Boolean);
     grabbables = [];
     touchables = [];
-    root?.traverse((o) => {
+    for (const root of roots) root.traverse((o) => {
       if (o.userData.grabbable) grabbables.push(o);
       if (o.userData.touchable) touchables.push(o);
     });
@@ -104,18 +105,29 @@ export function createInteractionManager() {
     let best = null, bestD = maxDist;
     for (const o of grabbables) {
       if (!o.visible || !isShown(o)) continue;
-      _v2.setFromMatrixPosition(o.matrixWorld);
-      const d = _v2.distanceTo(worldPos);
+      const d = distTo(o, worldPos);
       if (d < bestD) { bestD = d; best = o; }
     }
     return best;
+  }
+  /** 到物件的距離:有 grabPoint 用它,否則用包圍球表面(大零件也能從邊緣抓)。 */
+  function distTo(o, worldPos) {
+    const gp = o.userData.grabPoint;
+    if (gp) return _v2.copy(gp).applyMatrix4(o.matrixWorld).distanceTo(worldPos);
+    if (o.geometry) {
+      if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+      const bs = o.geometry.boundingSphere;
+      _v2.copy(bs.center).applyMatrix4(o.matrixWorld);
+      const r = bs.radius * o.matrixWorld.getMaxScaleOnAxis();
+      return Math.max(0, _v2.distanceTo(worldPos) - r * 0.6);
+    }
+    return _v2.setFromMatrixPosition(o.matrixWorld).distanceTo(worldPos);
   }
   function nearestTouchable(worldPos, maxDist = 0.05) {
     let best = null, bestD = maxDist;
     for (const o of touchables) {
       if (!o.visible || !isShown(o)) continue;
-      _v2.setFromMatrixPosition(o.matrixWorld);
-      const d = _v2.distanceTo(worldPos);
+      const d = distTo(o, worldPos);
       if (d < bestD) { bestD = d; best = o; }
     }
     return best;
@@ -132,6 +144,7 @@ export function createInteractionManager() {
     raycaster.far = 3;
     const pool = touchOnly ? touchables : [...touchables, ...grabbables];
     const hits = raycaster.intersectObjects(pool.filter(isShown), true);
+    hits.sort((a, b) => (a.object.userData.pickPriority ?? 0) - (b.object.userData.pickPriority ?? 0) || a.distance - b.distance);
     for (const h of hits) {
       // 命中物可能是子 mesh:往上找登記的物件
       for (let p = h.object; p; p = p.parent) {

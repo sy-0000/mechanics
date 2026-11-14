@@ -1,77 +1,53 @@
-import * as THREE from 'three';
-import { createClassroom } from './scene/classroom/index.js';
-import { setupVRButton } from './vrButton.js';
+// 學生端入口:2D 起始頁(名字、房間碼)→ 教室 + 教具(電腦預覽或 VR)。
+// 網址參數:?room= 房間碼;?skip=1 略過起始頁(開發 / 截圖用);?aid= 教具;?quality=high|vr|vr-baked;
+//          ?advanced=1 進階數學;?view=board;?debug=1 顯示 FPS / draw call / 三角形。
+import { boot } from './boot.js';
+import { resumeAudio } from './audio/sfx.js';
 
-// 電腦預覽頁:建立場景,並示範教具專案如何使用 board / menu / views API(?demo=0 可關閉示範內容)。
 const params = new URLSearchParams(location.search);
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-document.body.appendChild(renderer.domElement);
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.03, 200);
-
-const classroom = createClassroom({
-  renderer, scene, camera,
-  options: {
-    debug: params.get('debug') === '1',
-    fans: params.get('fans') !== '0',
-    quality: ['vr', 'vr-baked'].includes(params.get('quality')) ? params.get('quality') : 'high',
-    onSelectTeachingAid: id => demoSelect(id),
-  },
-});
-classroom.start();
-setupVRButton(renderer, document.getElementById('vr'));
-window.classroom = classroom; window.__scene = scene; // 方便在主控台測試 API
-
-// ---------------- 示範內容(教具專案會取代這段) ----------------
-const DEMO = {
-  fourBar: {
-    center: {
-      title: '四連桿機構 Four-bar Linkage',
-      lines: [
-        { text: '格拉索夫條件:s + l ≤ p + q', chalk: 'white' },
-        { text: '曲柄 r_{2} 轉一圈,搖桿 r_{4} 來回擺動', chalk: 'orange' },
-        { text: '傳動角 μ = 180° − θ_{3} + θ_{4}', chalk: 'blue' },
-        { text: '輸出角速度 ω_{4} = \\frac{r_{2} sin(θ_{3}−θ_{2})}{r_{4} sin(θ_{3}−θ_{4})} ω_{2}', chalk: 'green' },
-        { text: '現在:θ_{2} = {theta2}°  ω_{4} = {omega4} rad/s', chalk: 'yellow', live: 'theta2' },
-      ],
-    },
-    right: {
-      title: '進階:向量迴路',
-      lines: [
-        { text: 'r_{2}e^{iθ_2} + r_{3}e^{iθ_3} = r_{1} + r_{4}e^{iθ_4}', chalk: 'white' },
-        { text: '對時間微分得速度方程', chalk: 'white' },
-        { text: 'K_{1}cosθ_{4} − K_{2}cosθ_{2} + K_{3} = cos(θ_{2}−θ_{4})', chalk: 'blue' },
-      ],
-    },
-  },
-  gears: {
-    center: {
-      title: '齒輪組 Gear Train',
-      lines: [
-        { text: '轉速比 \\frac{n_{2}}{n_{1}} = \\frac{T_{1}}{T_{2}}', chalk: 'white' },
-        { text: '主動輪 T_{1} = 12 齒', chalk: 'orange' },
-        { text: '從動輪 T_{2} = 36 齒', chalk: 'green' },
-        { text: '現在:n_{1} = {n1} rpm  n_{2} = {n2} rpm', chalk: 'yellow', live: 'n1' },
-      ],
-    },
-  },
+const opts = {
+  quality: ['vr', 'vr-baked'].includes(params.get('quality')) ? params.get('quality') : 'high',
+  debug: params.get('debug') === '1',
+  aid: params.get('aid') ?? undefined,
+  advanced: params.get('advanced') === '1',
+  view: params.get('view') ?? undefined,
+  cam: params.get('cam') ?? undefined,
 };
-let current = null, t0 = performance.now();
-function demoSelect(id) {
-  current = DEMO[id];
-  if (!current) return;
-  classroom.board.setZone('center', current.center);
-  classroom.board.setAdvanced(!!current.right && params.get('advanced') !== '0', current.right);
-}
-if (params.get('demo') !== '0') {
-  classroom.menu.setItems([{ id: 'fourBar', name: '四連桿' }, { id: 'gears', name: '齒輪組' }]);
-  demoSelect(params.get('aid') ?? 'fourBar');
-  setInterval(() => {
-    const t = (performance.now() - t0) / 1000;
-    const th = (t * 36) % 360;
-    classroom.board.updateValues({ theta2: Math.round(th), omega4: 1.2 * Math.sin(th * Math.PI / 180) + 0.3, n1: 60, n2: 20 });
-  }, 250);
-  if (params.get('view') === 'board') setTimeout(() => classroom.views.goTo('board'), 300);
-  if (params.get('cam')) { const v = params.get('cam').split(',').map(Number); setTimeout(() => classroom.debugSetCamera(v.slice(0, 3), v.slice(3, 6)), 200); }
-  if (params.get('menu') === '1') setTimeout(() => classroom.menu.open(), 500);
+let clientId = null;
+try { clientId = localStorage.getItem('wk-cid') || `c${Math.random().toString(36).slice(2, 10)}`; localStorage.setItem('wk-cid', clientId); } catch { clientId = `c${Math.random().toString(36).slice(2, 10)}`; }
+
+if (params.get('skip') === '1') boot({ ...opts, name: 'dev', room: params.get('room') ?? '', clientId });
+else startPage();
+
+function startPage() {
+  const el = document.createElement('div');
+  el.id = 'start';
+  el.innerHTML = `
+    <h1>機構教室</h1>
+    <p class="sub">把一個動作,變成我們想要的動作</p>
+    <label>名字(必填)<input id="name" maxlength="12" placeholder="你的名字" autocomplete="off"></label>
+    <label>房間碼<input id="room" placeholder="老師給的房間碼(可空白)" autocomplete="off"></label>
+    <button id="enter" disabled>進入</button>
+    <p class="hint" id="hint"></p>`;
+  document.body.appendChild(el);
+  const $ = s => el.querySelector(s);
+  $('#room').value = params.get('room') || '';
+  try { $('#name').value = localStorage.getItem('wk-name') || ''; } catch { /* 無痕模式 */ }
+  let xr = false;
+  const refresh = () => {
+    $('#enter').textContent = xr ? '進入 VR' : '用滑鼠預覽';
+    $('#hint').textContent = xr ? '戴上頭盔後,用左手把 Y 鍵(或左手掌心朝上)打開選單' : '這台裝置不支援 VR,用滑鼠也能完整操作;按 Y 打開選單';
+    $('#enter').disabled = !$('#name').value.trim();
+  };
+  navigator.xr?.isSessionSupported?.('immersive-vr').then(ok => { xr = ok; refresh(); }).catch(refresh);
+  $('#name').addEventListener('input', refresh); refresh();
+  $('#enter').addEventListener('click', async () => {
+    const name = $('#name').value.trim(); if (!name) return;
+    try { localStorage.setItem('wk-name', name); } catch { /* 無痕模式 */ }
+    resumeAudio();
+    $('#enter').disabled = true; $('#enter').textContent = '載入中…';
+    const room = $('#room').value.trim().toLowerCase();
+    el.remove();
+    await boot({ ...opts, name, room, clientId, enterXR: xr });
+  });
 }
