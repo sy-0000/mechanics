@@ -103,9 +103,9 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
   createBlackboardDetails(details);
   createWallFixtures(details);
   createWallSigns(details);
-  // 第二批:掃具櫃與兩個回收桶是大型物件(vr 保留);課本、筆記本、鉛筆盒、水壺、盆栽、掃把畚箕、桶內雜物是小物
+  // 第二批:掃具櫃與兩個回收桶是大型物件(vr 保留);課本、筆記本、鉛筆盒、水壺、盆栽、掃把畚箕是小物
   createBroomCabinet(root, details);
-  createRecycleBins(root, details);
+  createRecycleBins(root);
   createWindowPlants(details);
   createDeskBelongings(details);
   details.traverse(o => { o.userData.small = true; });
