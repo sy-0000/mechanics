@@ -31,9 +31,9 @@ export function createMenu({ renderer, scene, camera, domElement }) {
   const canvas = document.createElement('canvas'); canvas.width = CW; canvas.height = 256;
   const g = canvas.getContext('2d');
   const tex = new THREE.CanvasTexture(canvas); tex.colorSpace = THREE.SRGBColorSpace;
-  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: true, fog: false, toneMapped: false });
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, fog: false, toneMapped: false });
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
-  panel.visible = false; panel.renderOrder = 50; panel.userData.outline = false; panel.name = 'menuPanel';
+  panel.visible = false; panel.renderOrder = 9000; panel.userData.outline = false; panel.name = 'menuPanel';
   const iconImgs = new Map();
 
   const all = () => [...items, ...FIXED];
