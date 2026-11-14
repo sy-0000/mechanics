@@ -25,6 +25,14 @@ import { createDisplayCabinet } from './displayCabinet.js';
 import { createCeiling } from './ceiling.js';
 import { createStorageCabinet } from './storageCabinet.js';
 import { createWallCabinet } from './wallCabinet.js';
+import { createBulletinBoard } from './bulletinBoard.js';
+import { createBlackboardDetails } from './blackboardDetails.js';
+import { createWallFixtures } from './wallFixtures.js';
+import { createAirConditioner } from './airConditioner.js';
+import { createFireExtinguisher } from './fireExtinguisher.js';
+import { createWallSigns } from './wallSigns.js';
+import { createFourBarModel } from './models/fourBarModel.js';
+import { createGearTrainModel } from './models/gearTrainModel.js';
 import { createCeilingFan } from './ceilingFan.js';
 import { createViews } from './views.js';
 import { createPostFX } from './postfx.js';
@@ -78,6 +86,20 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
   createPegboard(root); createApronRack(root); createDrillPress(root); createBandSaw(root);
   createLumberRack(root); createTrashBin(root); createDisplayCabinet(root);
   createStorageCabinet(root); createWallCabinet(root);
+
+  // ---- 第三版細節 ----
+  // 大型物件(vr 也保留):佈告欄(含紙張)、冷氣、滅火器、機構模型 → 併入既有合併批次。
+  // 小物(只在 high 顯示、不投影):details 群組,另外合併成自己的批次,切換 vr 時整組隱藏。
+  const details = group(root, 'details');
+  createBulletinBoard(root, details);
+  createAirConditioner(root);
+  createFireExtinguisher(root);
+  createFourBarModel(root, { pos: [-1.95, 0.85, -1.9], rot: [0, 0.75, 0] });
+  createGearTrainModel(root, { pos: [-2.05, 0.85, 0.56], rot: [0, 1.79, 0] });
+  createBlackboardDetails(details);
+  createWallFixtures(details);
+  createWallSigns(details);
+  details.traverse(o => { o.userData.small = true; });
   const fans = FANS.map(p => createCeilingFan(root, p));
 
   // ---- 掛載點 ----
@@ -101,12 +123,13 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
   root.traverse(o => {
     if (!o.isMesh) return;
     const outdoor = o.userData.outdoor, transparent = o.material?.transparent;
-    o.castShadow = !outdoor && !transparent;
+    o.castShadow = !outdoor && !transparent && !o.userData.small;   // 小物件不投影
     o.receiveShadow = !outdoor && !transparent;
   });
 
   // ---- 合併:先把動畫/掛載群組各自內部合併,再合併整間教室的靜態幾何 ----
   [toggleClamp, ...cans, ...fans.map(f => f.rotor)].forEach(gr => batchStatic(gr, { includeDynamic: true }));
+  const detailInfo = batchStatic(details, { includeDynamic: true });
   const batchInfo = batchStatic(root);
   scene.traverse(o => {
     if (o.isMesh && o.material?.vertexColors && !o.geometry.attributes.color) {
@@ -149,6 +172,7 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
    */
   function setQuality(q) {
     quality = q;
+    details.visible = q === 'high';   // 小細節只在 high 模式顯示
     lights.setQuality(q);
     dof.setAllowed(q === 'high');
     const xr = q !== 'high';
@@ -215,7 +239,7 @@ export function createClassroom({ renderer, scene, camera, options = {} }) {
     update, render, onResize,
     /** 便利:啟動動畫迴圈(WebXR 相容)。 */
     start() { renderer.setAnimationLoop(() => { update(); render(); }); window.addEventListener('resize', onResize); onResize(); },
-    stats, batchInfo,
+    stats, batchInfo, detailInfo,
     /** 除錯:把電腦鏡頭放到任意位置(解除視角限制)。 */
     debugSetCamera(eye, target) { views.free(eye, target); },
     dispose() {

@@ -193,17 +193,16 @@ export function metalSet(kind = 'brushed', n = 1024) {
     for (let i = 0; i < 26000; i++) { const x = rand() * n, y = rand() * n; gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},0.35)`; gh.fillRect(x, y, 1.5, 1.5); ga.fillStyle = `rgba(80,80,80,${rand() * 0.15})`; ga.fillRect(x, y, 1.5, 1.5); }
   }
   if (kind === 'painted') {
-    for (let i = 0; i < 5000; i++) { const x = rand() * n, y = rand() * n; gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},0.15)`; gh.beginPath(); gh.arc(x, y, 1.5 + rand() * 2, 0, 7); gh.fill(); }
-    // 掉漆:露出深灰金屬(金屬度 1、粗糙度低、高度凹陷)
-    for (let i = 0; i < 22; i++) {
-      const x = rand() * n, y = rand() * n, R = 1.5 + rand() * rand() * 7;
-      const p = new Path2D(); for (let k = 0; k < 9; k++) { const ang = k / 9 * Math.PI * 2, rr = R * (0.5 + rand() * 0.7); p.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr); } p.closePath();
-      ga.fillStyle = 'rgb(175,175,172)'; ga.fill(p); gm.fillStyle = 'rgb(255,255,255)'; gm.fill(p);
-      gr.fillStyle = 'rgb(90,90,90)'; gr.fill(p); gh.fillStyle = 'rgb(70,70,70)'; gh.fill(p);
+    for (let i = 0; i < 3000; i++) { const x = rand() * n, y = rand() * n; gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},0.04)`; gh.beginPath(); gh.arc(x, y, 3 + rand() * 4, 0, 7); gh.fill(); } // 極淡的漆面橘皮
+    // 磨損:大面積、低對比的漸層(漆面變薄、略亮、略光滑、金屬度微升),不做成一點一點的掉漆斑
+    for (let i = 0; i < 10; i++) {
+      const x = rand() * n, y = rand() * n, R = 120 + rand() * 260;
+      const ring = (ctx, c0) => { const gg = ctx.createRadialGradient(x, y, 0, x, y, R); gg.addColorStop(0, c0); gg.addColorStop(1, c0.replace(/[\d.]+\)$/, '0)')); ctx.fillStyle = gg; ctx.fillRect(x - R, y - R, R * 2, R * 2); };
+      ring(ga, 'rgba(225,222,215,0.18)'); ring(gr, 'rgba(0,0,0,0.12)'); ring(gm, 'rgba(255,255,255,0.08)');
     }
   }
   // 刮痕(亮、光滑)與使用磨損斑(較光亮)
-  for (let i = 0; i < (kind === 'cast' ? 40 : 160); i++) {
+  for (let i = 0; i < (kind === 'cast' ? 40 : kind === 'painted' ? 45 : 160); i++) {
     const x = rand() * n, y = rand() * n, l = 8 + rand() * 70, ang = rand() * Math.PI;
     const p = new Path2D(); p.moveTo(x, y); p.quadraticCurveTo(x + Math.cos(ang) * l / 2 + rand() * 6, y + Math.sin(ang) * l / 2, x + Math.cos(ang) * l, y + Math.sin(ang) * l);
     ga.strokeStyle = 'rgba(255,255,255,0.35)'; ga.lineWidth = 0.7; ga.stroke(p);
@@ -211,11 +210,11 @@ export function metalSet(kind = 'brushed', n = 1024) {
     gh.strokeStyle = 'rgba(0,0,0,0.4)'; gh.lineWidth = 0.7; gh.stroke(p);
     if (kind === 'painted') { gm.strokeStyle = 'rgba(255,255,255,0.8)'; gm.lineWidth = 0.7; gm.stroke(p); }
   }
-  for (let i = 0; i < 14; i++) {
-    const x = rand() * n, y = rand() * n, R = 30 + rand() * 80;
-    const g = gr.createRadialGradient(x, y, 0, x, y, R); g.addColorStop(0, 'rgba(0,0,0,0.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  for (let i = 0; i < 8; i++) {
+    const x = rand() * n, y = rand() * n, R = 110 + rand() * 220;
+    const g = gr.createRadialGradient(x, y, 0, x, y, R); g.addColorStop(0, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
     gr.fillStyle = g; gr.fillRect(x - R, y - R, R * 2, R * 2);
-    const d = ga.createRadialGradient(x, y, 0, x, y, R); d.addColorStop(0, 'rgba(110,100,90,0.08)'); d.addColorStop(1, 'rgba(110,100,90,0)');
+    const d = ga.createRadialGradient(x, y, 0, x, y, R); d.addColorStop(0, 'rgba(110,100,90,0.05)'); d.addColorStop(1, 'rgba(110,100,90,0)');
     ga.fillStyle = d; ga.fillRect(x - R, y - R, R * 2, R * 2);
   }
   return finish(n, a, h, r, { normalStrength: kind === 'cast' ? 2.5 : 1.0, aoStrength: 0.4, metalC: m });

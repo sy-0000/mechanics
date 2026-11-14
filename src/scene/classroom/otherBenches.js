@@ -1,7 +1,7 @@
 import { createWorkbench } from './workbench.js';
 import { group } from './util/geo.js';
 import { OTHER_BENCHES } from './layout.js';
-import { paperMat } from '../../materials/paper.js';
+import { paperMat, paperUV } from '../../materials/paper.js';
 import { mk, rbox } from './util/geo.js';
 import * as THREE from 'three';
 import { woodMat } from '../../materials/wood.js';
@@ -19,10 +19,10 @@ export function createOtherBenches(parent) {
   OTHER_BENCHES.forEach((c, i) => createWorkbench(g, c, { near: false, name: `otherBench${i}` }));
   // 第二張桌上只放一張圖紙
   const [x, y, z] = OTHER_BENCHES[1];
-  mk(g, new THREE.PlaneGeometry(0.42, 0.297), paperMat(9), { pos: [x + 0.35, y + 0.002, z - 0.1], rot: [-Math.PI / 2, 0, 0.3] });
+  mk(g, paperUV(new THREE.PlaneGeometry(0.42, 0.297), 9), paperMat(), { pos: [x + 0.35, y + 0.002, z - 0.1], rot: [-Math.PI / 2, 0, 0.3] });
   // 其他桌上的小道具:圖紙、鋼尺、磨塊、木塊、白膠、捲尺、零件盤、三角板
   const [ax, ay, az] = OTHER_BENCHES[0];
-  mk(g, new THREE.PlaneGeometry(0.42, 0.297), paperMat(11), { pos: [ax - 0.2, ay + 0.001, az + 0.05], rot: [-Math.PI / 2, 0, -0.15] });
+  mk(g, paperUV(new THREE.PlaneGeometry(0.42, 0.297), 11), paperMat(), { pos: [ax - 0.2, ay + 0.001, az + 0.05], rot: [-Math.PI / 2, 0, -0.15] });
   createSteelRuler(g, { pos: [ax - 0.15, ay + 0.0025, az + 0.25], rot: [0, 0.1, 0], length: 0.3 });
   createSandingBlock(g, { pos: [ax + 0.3, ay, az - 0.1], rot: [0, 0.4, 0] });
   const blockMat = woodMat('#D9C3A0', 'grain');

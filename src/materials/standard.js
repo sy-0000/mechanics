@@ -27,6 +27,7 @@ const AUTO = {
   [C.board]: { set: 'slate', roughness: 1, metalness: 0 },
 };
 
+const ROUGH_LEVELS = [0.35, 0.6, 0.9];
 const cache = new Map();
 /**
  * opts: set(PBR 組名稱)、map(覆蓋反照率)、roughness、metalness、emissive、emissiveIntensity、
@@ -35,6 +36,12 @@ const cache = new Map();
 export function std(color, opts = {}) {
   const auto = AUTO[String(color).toUpperCase()] ?? AUTO[color];
   const o = { roughness: 0.6, metalness: 0, ...(auto ?? {}), ...opts };
+  // 沒有貼圖的塑膠/漆面材質:粗糙度與金屬度吸附到少數幾個等級,
+  // 讓不同物件的材質鍵相同、合併進同一批次(顏色已烘進頂點色),新增物件時不會多出 draw call。
+  if (!o.set && !o.map && !o.transparent) {
+    o.roughness = ROUGH_LEVELS.reduce((a, b) => (Math.abs(b - o.roughness) < Math.abs(a - o.roughness) ? b : a));
+    o.metalness = o.metalness >= 0.5 ? 1 : 0;
+  }
   const key = opts.key ?? (opts.map || opts.transparent ? null : JSON.stringify([color, o.set, o.roughness, o.metalness, o.emissive, o.emissiveIntensity, o.side ?? 0, o.normalScale]));
   if (key && cache.has(key)) return cache.get(key);
   const s = o.set ? pbrSet(o.set) : null;

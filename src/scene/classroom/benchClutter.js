@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { paperMat } from '../../materials/paper.js';
+import { paperMat, paperUV } from '../../materials/paper.js';
 import { group, markNear } from './util/geo.js';
 import { WORKBENCH } from './layout.js';
 import { createPencil } from './tools/pencil.js';
@@ -26,8 +26,8 @@ function curledPaper(seed, lift = 0.012) {
     p.setY(i, lift * (e * e * (z > 0 ? 1 : 0.6) + s * s * 0.35));
   }
   geo.computeVertexNormals();
-  const m = new THREE.Mesh(geo, paperMat(seed));
-  m.material.side = THREE.DoubleSide;
+  paperUV(geo, seed, { rotate: true });
+  const m = new THREE.Mesh(geo, paperMat());
   return m;
 }
 

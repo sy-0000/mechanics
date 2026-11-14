@@ -17,13 +17,20 @@ const ZONE_STYLE = {
 function slateTexture() {
   const c = makeCanvas(1024, 320), g = c.getContext('2d'), r = rng(77);
   g.fillStyle = C.board; g.fillRect(0, 0, 1024, 320);
-  // 擦拭痕跡:大片淡灰弧形
-  for (let i = 0; i < 26; i++) {
-    g.strokeStyle = `rgba(200,200,190,${0.015 + r() * 0.025})`; g.lineWidth = 18 + r() * 40;
-    g.beginPath(); const x = r() * 1024, y = r() * 320;
-    g.arc(x, y + 120, 140 + r() * 120, -Math.PI * 0.8, -Math.PI * 0.2); g.stroke();
+  // 擦拭殘留:低對比、大面積的板擦掃痕(橫向長條漸層 + 幾道寬弧),只在板面底色上,不影響書寫層的文字
+  for (let i = 0; i < 14; i++) {
+    const y = r() * 320, h = 40 + r() * 80, x0 = r() * 600, w = 250 + r() * 500;
+    const grd = g.createLinearGradient(x0, 0, x0 + w, 0);
+    const a = 0.025 + r() * 0.03;
+    grd.addColorStop(0, 'rgba(210,210,200,0)'); grd.addColorStop(0.3, `rgba(210,210,200,${a})`); grd.addColorStop(0.7, `rgba(210,210,200,${a * 0.8})`); grd.addColorStop(1, 'rgba(210,210,200,0)');
+    g.fillStyle = grd; g.beginPath(); g.ellipse(x0 + w / 2, y, w / 2, h / 2, (r() - 0.5) * 0.12, 0, Math.PI * 2); g.fill();
   }
-  for (let i = 0; i < 3000; i++) { g.fillStyle = `rgba(255,255,255,${r() * 0.035})`; g.fillRect(r() * 1024, r() * 320, 2, 2); }
+  for (let i = 0; i < 8; i++) {
+    g.strokeStyle = `rgba(200,200,190,${0.012 + r() * 0.015})`; g.lineWidth = 40 + r() * 50;
+    g.beginPath(); const x = r() * 1024, y = r() * 320;
+    g.arc(x, y + 140, 160 + r() * 120, -Math.PI * 0.75, -Math.PI * 0.25); g.stroke();
+  }
+  for (let i = 0; i < 3000; i++) { g.fillStyle = `rgba(255,255,255,${r() * 0.015})`; g.fillRect(r() * 1024, r() * 320, 2, 2); }
   return canvasTexture(c, { repeat: false });
 }
 
