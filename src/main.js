@@ -14,7 +14,7 @@ const classroom = createClassroom({
   options: {
     debug: params.get('debug') === '1',
     fans: params.get('fans') !== '0',
-    quality: params.get('quality') === 'vr' ? 'vr' : 'high',
+    quality: ['vr', 'vr-baked'].includes(params.get('quality')) ? params.get('quality') : 'high',
     onSelectTeachingAid: id => demoSelect(id),
   },
 });

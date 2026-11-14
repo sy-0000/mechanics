@@ -32,7 +32,7 @@ for (const f of files) {
 }
 // palette.js 內的命名色也要檢查(RESERVED 那一行除外)
 readFileSync('src/materials/palette.js', 'utf8').split('\n').forEach((line, i) => {
-  if (line.includes('RESERVED') || line.trim().startsWith('//') || line.includes('outline:')) return; // 描邊線色是規格指定的深棕線條,非物件色
+  if (line.includes('RESERVED') || line.trim().startsWith('//')) return;
   for (const [hex] of line.matchAll(/#[0-9A-Fa-f]{6}\b/g)) for (const [name, r] of Object.entries(RESERVED)) {
     const d = dE(toLab(hex), toLab(r)); if (d < LIMIT) { bad++; console.log(`palette.js:${i + 1} ${hex} 太接近 ${name}(ΔE=${d.toFixed(1)})`); }
   }

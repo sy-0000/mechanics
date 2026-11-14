@@ -160,7 +160,7 @@ export function wallSet(n = 512) {
   gr.fillStyle = gray(225); gr.fillRect(0, 0, n, n); // 霧面
   for (let i = 0; i < 9000; i++) { // 橘皮紋
     const x = rand() * n, y = rand() * n, R = 1 + rand() * 3;
-    gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},${0.12 + rand() * 0.15})`;
+    gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},${0.04 + rand() * 0.06})`;
     gh.beginPath(); gh.arc(x, y, R, 0, Math.PI * 2); gh.fill();
   }
   for (let i = 0; i < 18; i++) { // 不均勻的淡斑
@@ -168,7 +168,7 @@ export function wallSet(n = 512) {
     const g = ga.createRadialGradient(x, y, 0, x, y, R); g.addColorStop(0, `rgba(150,140,125,${0.025 + rand() * 0.03})`); g.addColorStop(1, 'rgba(150,140,125,0)');
     ga.fillStyle = g; ga.fillRect(x - R, y - R, R * 2, R * 2);
   }
-  return finish(n, a, h, r, { normalStrength: 0.8, aoStrength: 0.2 });
+  return finish(n, a, h, r, { normalStrength: 0.5, aoStrength: 0.15 });
 }
 
 // ---------------- 金屬 ----------------
@@ -185,7 +185,7 @@ export function metalSet(kind = 'brushed', n = 1024) {
     for (let i = 0; i < 2600; i++) { // 拉絲
       const y = rand() * n, v = rand();
       gr.fillStyle = `rgba(${v < 0.5 ? '0,0,0' : '255,255,255'},${0.03 + rand() * 0.06})`; gr.fillRect(0, y, n, 0.7 + rand());
-      gh.fillStyle = `rgba(${v < 0.5 ? '0,0,0' : '255,255,255'},0.12)`; gh.fillRect(0, y, n, 0.7);
+      gh.fillStyle = `rgba(${v < 0.5 ? '0,0,0' : '255,255,255'},0.04)`; gh.fillRect(0, y, n, 0.7);
       ga.fillStyle = `rgba(${v < 0.5 ? '200,200,200' : '255,255,255'},0.04)`; ga.fillRect(0, y, n, 0.7);
     }
   }
@@ -195,10 +195,10 @@ export function metalSet(kind = 'brushed', n = 1024) {
   if (kind === 'painted') {
     for (let i = 0; i < 5000; i++) { const x = rand() * n, y = rand() * n; gh.fillStyle = `rgba(${rand() < 0.5 ? '0,0,0' : '255,255,255'},0.15)`; gh.beginPath(); gh.arc(x, y, 1.5 + rand() * 2, 0, 7); gh.fill(); }
     // 掉漆:露出深灰金屬(金屬度 1、粗糙度低、高度凹陷)
-    for (let i = 0; i < 70; i++) {
-      const x = rand() * n, y = rand() * n, R = 2 + rand() * rand() * 14;
+    for (let i = 0; i < 22; i++) {
+      const x = rand() * n, y = rand() * n, R = 1.5 + rand() * rand() * 7;
       const p = new Path2D(); for (let k = 0; k < 9; k++) { const ang = k / 9 * Math.PI * 2, rr = R * (0.5 + rand() * 0.7); p.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr); } p.closePath();
-      ga.fillStyle = 'rgb(150,150,150)'; ga.fill(p); gm.fillStyle = 'rgb(255,255,255)'; gm.fill(p);
+      ga.fillStyle = 'rgb(175,175,172)'; ga.fill(p); gm.fillStyle = 'rgb(255,255,255)'; gm.fill(p);
       gr.fillStyle = 'rgb(90,90,90)'; gr.fill(p); gh.fillStyle = 'rgb(70,70,70)'; gh.fill(p);
     }
   }

@@ -3,7 +3,6 @@ export const RESERVED = ['#C08054', '#DBBE62', '#5A3A28', '#75A17B'];
 
 export const C = {
   fog: '#FEFDF5',
-  outline: '#33261D',        // 描邊深棕(線條用,非物件色)
   wallCream: '#F5EEDC',
   ceiling: '#FAF6EB',
   beech: '#E4CFAB',          // 櫸木集成材

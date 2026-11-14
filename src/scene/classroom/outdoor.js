@@ -8,7 +8,7 @@ import { mk, group, rbox } from './util/geo.js';
 // 窗外材質一律 fog=false,大氣霧化直接烘進顏色(依距離混向 #FEFDF5),地平線保持清楚。
 const FOGC = new THREE.Color(C.fog);
 function hazed(hex, dist) {
-  const k = THREE.MathUtils.clamp((dist - 4) / 80, 0, 0.75);
+  const k = THREE.MathUtils.clamp((dist - 6) / 120, 0, 0.45);
   return new THREE.Color(hex).lerp(FOGC, k);
 }
 const basic = (hex, dist, extra = {}) => new THREE.MeshBasicMaterial({ color: hazed(hex, dist).multiplyScalar(0.85), fog: false, ...extra });
@@ -45,10 +45,10 @@ export function createOutdoor(parent) {
   // 操場地面(草地 + PU 跑道 + 白線),位於下方 4 m
   const groundY = drop - 0.1;
   const field = makeCanvas(1024, 1024), fg = field.getContext('2d'), r = rng(9);
-  fg.fillStyle = '#' + hazed(C.grass, 25).getHexString(); fg.fillRect(0, 0, 1024, 1024);
+  fg.fillStyle = '#' + hazed(C.grass, 10).getHexString(); fg.fillRect(0, 0, 1024, 1024);
   for (let i = 0; i < 2500; i++) { fg.fillStyle = `rgba(120,120,90,${r() * 0.06})`; fg.fillRect(r() * 1024, r() * 1024, 6, 2); }
   // 跑道:圓角長方形環
-  const trackC = '#' + hazed(C.track, 25).getHexString();
+  const trackC = '#' + hazed(C.track, 10).getHexString();
   const ring = (inset, col, lw) => {
     fg.strokeStyle = col; fg.lineWidth = lw; const x = 120 + inset, y = 140 + inset, w = 784 - inset * 2, h = 744 - inset * 2, rr = h / 2 - 10;
     fg.beginPath(); fg.roundRect(x, y, w, h, rr); fg.stroke();
@@ -77,8 +77,8 @@ export function createOutdoor(parent) {
     const tg = group(g, 'tree', [tx, groundY, tz]);
     mk(tg, trunkGeo, shaded('#9C8E80', d), { pos: [0, 1.3, 0] });
     const s = 0.9 + (i % 3) * 0.2;
-    mk(tg, crownGeo, shaded('#A6A28E', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
-    mk(tg, crownGeo, shaded('#B2AE9B', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
+    mk(tg, crownGeo, shaded('#A6A898', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
+    mk(tg, crownGeo, shaded('#B0B1A2', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
   });
   // 遠方校舍(盒子 + 窗帶)
   const bldg = (x, z, w, h, d, ry = 0) => {
