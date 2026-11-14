@@ -59,7 +59,7 @@
 | 檔位 | draw calls(含陰影 pass) | 三角形 |
 | --- | --- | --- |
 | vr(無景深) | ≈124 | ≈300k |
-| high(含景深) | ≈170 | ≈300k |
+| high(含景深,景深需多畫一次深度) | ≈243 | ≈600k |
 - 量測環境為無 GPU 的軟體繪製,FPS 數值沒有參考價值。
 - 若 Quest 3 低於 72 fps,優先調整:陰影圖降到 512、`setFans(false)`、降低 `renderer.xr.setFramebufferScaleFactor`、減少窗外樹的面數。
 - `vr.html` 每 5 秒在主控台輸出 `[perf]` 平均 FPS / draw call / 三角形,可用 Quest 瀏覽器的遠端除錯讀取。
