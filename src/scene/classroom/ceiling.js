@@ -9,7 +9,9 @@ export function createCeiling(parent) {
   const { xs, zs, w, d } = CEILING_LIGHTS;
   const list = [];
   for (const x of xs) for (const z of zs) list.push({ pos: [x, ROOM.height - 0.006, z] });
-  instanced(g, rbox(w + 0.06, 0.02, d + 0.06, 0.004), std('#E9E5DB'), list, { name: 'lightFrames' });
+  // 燈框:改為靜態幾何,合併進既有批次(比獨立的 InstancedMesh 少 1 個 draw call)
+  const frame = std('#E9E5DB');
+  for (const l of list) mk(g, rbox(w + 0.06, 0.02, d + 0.06, 0.004), frame, { pos: l.pos });
   const panel = std('#FFFBF0', { emissive: '#FFF6E2', emissiveIntensity: 3.2, key: 'ceilLight' });
   const panels = instanced(g, rbox(w, 0.012, d, 0.003), panel, list.map(l => ({ pos: [l.pos[0], l.pos[1] - 0.009, l.pos[2]] })), { name: 'lightPanels' });
   // 通風口
