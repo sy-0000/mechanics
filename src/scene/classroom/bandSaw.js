@@ -1,6 +1,6 @@
 import { BAND_SAW } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { metalMat } from '../../materials/metal.js';
 import { rbox, cyl, sphere, mk, group } from './util/geo.js';
 import { createSafetyTape } from './safetyTape.js';
@@ -9,8 +9,8 @@ import { createSafetyTape } from './safetyTape.js';
 // C 字形機身:上下鋸輪藏在有門的輪罩內;中間約 38 cm 見方的鑄鐵工作台(下方耳軸);可升降的鋸片護罩導柱;頂部張力旋鈕。
 export function createBandSaw(parent) {
   const g = group(parent, 'bandSaw', BAND_SAW.base, [0, -Math.PI / 2, 0]);
-  const cast = toon(C.castIron), paint = toon(C.machineCream), warm = toon(C.machineWarm);
-  const steel = metalMat(C.steelBright, true), dark = toon(C.steelDark), knob = toon(C.gripBlack);
+  const cast = std(C.castIron), paint = std(C.machineCream), warm = std(C.machineWarm);
+  const steel = metalMat(C.steelBright, true), dark = std(C.steelDark), knob = std(C.gripBlack);
   // 落地底座(梯形鋼架 + 封板)
   mk(g, rbox(0.5, 0.05, 0.45, 0.01), cast, { pos: [0, 0.025, 0] });
   mk(g, rbox(0.42, 0.6, 0.38, 0.015), warm, { pos: [0, 0.35, 0] });
@@ -39,13 +39,13 @@ export function createBandSaw(parent) {
   mk(g, cyl(0.006, 0.006, 0.08, 8), dark, { pos: [tx, ty - 0.08, 0.2], rot: [Math.PI / 2, 0, 0] });
   mk(g, sphere(0.014), knob, { pos: [tx, ty - 0.08, 0.24] });
   // 鋸片(可見段)+ 護罩導柱
-  mk(g, rbox(0.012, 0.22, 0.0008, 0.0002), toon(C.steelBright), { pos: [tx, ty + 0.12, 0.04], rot: [0, Math.PI / 2, 0], outline: false });
+  mk(g, rbox(0.012, 0.22, 0.0008, 0.0002), std(C.steelBright), { pos: [tx, ty + 0.12, 0.04], rot: [0, Math.PI / 2, 0] });
   mk(g, rbox(0.018, 0.23, 0.018, 0.004), steel, { pos: [tx, ty + 0.22, 0.02] });
   mk(g, rbox(0.04, 0.07, 0.035, 0.006), warm, { pos: [tx, ty + 0.12, 0.03] });
   mk(g, cyl(0.009, 0.009, 0.04, 10), knob, { pos: [tx - 0.04, ty + 0.3, 0.0], rot: [0, 0, Math.PI / 2] });
   // 開關盒(側面)
-  mk(g, rbox(0.07, 0.1, 0.05, 0.008), toon('#E2DED4'), { pos: [fx - 0.15, 1.15, 0.1] });
-  mk(g, rbox(0.035, 0.022, 0.014, 0.004), toon('#8A8F92'), { pos: [fx - 0.15, 1.17, 0.128] });
+  mk(g, rbox(0.07, 0.1, 0.05, 0.008), std('#E2DED4'), { pos: [fx - 0.15, 1.15, 0.1] });
+  mk(g, rbox(0.035, 0.022, 0.014, 0.004), std('#8A8F92'), { pos: [fx - 0.15, 1.17, 0.128] });
   createSafetyTape(g, 0.9, 1.0, [0, 0.12]);
   return g;
 }

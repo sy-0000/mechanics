@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { ROOM, WINDOWS, DOOR, BOARD } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std, wallMat } from '../../materials/standard.js';
 import { woodMat } from '../../materials/wood.js';
 import { terrazzoMat } from '../../materials/terrazzo.js';
 import { glassMat } from '../../materials/glass.js';
@@ -12,20 +12,19 @@ export function createRoom(parent) {
   const g = group(parent, 'room');
   const { xMin, xMax, zMin, zMax, height: H, wainscot: WH } = ROOM;
   const W = xMax - xMin, D = zMax - zMin, cx = (xMin + xMax) / 2, cz = (zMin + zMax) / 2;
-  const wall = toon(C.wallCream);
+  const wall = wallMat(C.wallCream);
   const panel = woodMat(C.woodLight, 'grain', 21);
   const t = 0.12; // 牆厚
 
   // 地板
   const floorGeo = worldUV(new THREE.BoxGeometry(W + 0.4, 0.1, D + 0.4), 1);
   const floor = mk(g, floorGeo, terrazzoMat(C.terrazzo), { pos: [cx, -0.05, cz], receive: true, name: 'floor' });
-  floor.userData.near = true; floor.userData.outline = false;
+  floor.userData.near = true;
 
   // 牆片小工具:從 a 到 b 的盒子
   const slab = (x0, x1, y0, y1, z0, z1, mat, name) => {
     const geo = worldUV(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), 1);
-    const m = mk(g, geo, mat, { pos: [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2], name });
-    m.userData.outline = false; return m;
+    const m = mk(g, geo, mat, { pos: [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2], name }); return m;
   };
 
   // 前牆(黑板牆)與後牆
@@ -48,10 +47,10 @@ export function createRoom(parent) {
     slab(xMin - t, xMin, sillTop, H, a, b, wall, 'leftOver');
   }
   // 天花板
-  const ceil = slab(xMin - t, xMax + t, H, H + 0.1, zMin - t, zMax + t, toon(C.ceiling), 'ceiling');
+  const ceil = slab(xMin - t, xMax + t, H, H + 0.1, zMin - t, zMax + t, wallMat(C.ceiling), 'ceiling');
 
   // 護牆板(1.0 m,左牆窗下只到窗台)+ 頂部壓條
-  const cap = toon(C.woodMid);
+  const cap = std(C.woodMid);
   const wd = 0.015;
   const wainscot = (x0, x1, z0, z1, top) => {
     slab(x0, x1, 0, top, z0, z1, panel, 'wainscot');
@@ -71,7 +70,7 @@ export function createRoom(parent) {
   capRail(xMin, d0, zMax - 0.03, zMax, WH); capRail(d1, xMax, zMax - 0.03, zMax, WH);
   capRail(xMax - 0.03, xMax, zMin, zMax, WH);
   // 踢腳板
-  const kick = toon(C.woodFrame);
+  const kick = std(C.woodFrame);
   mk(g, rbox(W, 0.08, 0.02, 0.004), kick, { pos: [cx, 0.04, zMin + 0.025] });
   mk(g, rbox(0.02, 0.08, D, 0.004), kick, { pos: [xMax - 0.025, 0.04, cz] });
 
@@ -93,11 +92,10 @@ function createDoor(parent, d0, d1, z) {
   mk(g, rbox(lw * 0.22, lh * 0.3, 0.04), leaf, { pos: [-lw / 2 + lw * 0.11, lh * 0.77, -0.02] });
   mk(g, rbox(lw * 0.22, lh * 0.3, 0.04), leaf, { pos: [lw / 2 - lw * 0.11, lh * 0.77, -0.02] });
   const gl = mk(g, new THREE.PlaneGeometry(lw * 0.56, lh * 0.3), glassMat(0.18), { pos: [0, lh * 0.77, -0.02], rot: [0, Math.PI, 0] });
-  gl.userData.outline = false;
   // 玻璃後方:走廊的淡色牆
-  mk(g, new THREE.PlaneGeometry(lw * 0.6, lh * 0.34), toon('#EFEADF'), { pos: [0, lh * 0.77, 0.4], rot: [0, Math.PI, 0], outline: false });
+  mk(g, new THREE.PlaneGeometry(lw * 0.6, lh * 0.34), std('#EFEADF'), { pos: [0, lh * 0.77, 0.4], rot: [0, Math.PI, 0] });
   // 門板裝飾框線與門把
-  const metal = toon(C.steel);
+  const metal = std(C.steel);
   mk(g, rbox(lw * 0.7, lh * 0.4, 0.008), leaf, { pos: [0, lh * 0.3, -0.045] });
   mk(g, new THREE.CylinderGeometry(0.012, 0.012, 0.12, 10), metal, { pos: [lw / 2 - 0.08, 1.0, -0.07], rot: [0, 0, Math.PI / 2] });
   mk(g, rbox(0.03, 0.14, 0.012), metal, { pos: [lw / 2 - 0.06, 1.0, -0.045] });

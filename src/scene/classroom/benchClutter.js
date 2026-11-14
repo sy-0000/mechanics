@@ -7,6 +7,10 @@ import { createEraser } from './tools/eraser.js';
 import { createSteelRuler } from './tools/steelRuler.js';
 import { createFClamp } from './tools/fClamp.js';
 import { createCClamp } from './tools/cClamp.js';
+import { createTapeMeasure } from './tools/tapeMeasure.js';
+import { createSetSquare } from './tools/setSquare.js';
+import { createUtilityKnife } from './tools/utilityKnife.js';
+import { createPartsTray } from './partsTray.js';
 
 // 工作桌掛載區外的散落物。掛載區為 x∈[-0.4,0.4]、z∈[-1.0,-0.2](桌面座標),所有物件都留在兩側條帶內。
 const Y = WORKBENCH.height;
@@ -24,7 +28,6 @@ function curledPaper(seed, lift = 0.012) {
   geo.computeVertexNormals();
   const m = new THREE.Mesh(geo, paperMat(seed));
   m.material.side = THREE.DoubleSide;
-  m.userData.outline = false;
   return m;
 }
 
@@ -52,5 +55,10 @@ export function createBenchClutter(parent) {
   createFClamp(g, { pos: [-0.75, Y + 0.012, -0.2], rot: [-Math.PI / 2, 0, -Math.PI / 2 + 0.1], opening: 0.09, len: 0.25 });
   // C 夾平放在左後方
   createCClamp(g, { pos: [-0.7, Y + 0.009, -0.96], rot: [-Math.PI / 2, 0, 0.6] });
+  // 寫實版增加的小道具(全部留在掛載區外)
+  createTapeMeasure(g, { pos: [-0.5, Y, -0.95], rot: [0, 0.5, 0] });
+  createSetSquare(g, { pos: [-0.72, Y + 0.0035, -0.66], rot: [0, -0.35, 0], size: 0.18 });
+  createUtilityKnife(g, { pos: [0.62, Y + 0.0012, -0.27], rot: [0, 1.25, 0] });
+  createPartsTray(g, { pos: [0.5, Y, -0.995], rot: [0, 0.05, 0], seed: 3, w: 0.12, d: 0.08 });
   return markNear(g);
 }

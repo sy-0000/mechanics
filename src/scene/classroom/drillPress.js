@@ -1,6 +1,6 @@
 import { DRILL_PRESS } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { metalMat } from '../../materials/metal.js';
 import { rbox, cyl, sphere, torus, mk, group } from './util/geo.js';
 import { createSafetyTape } from './safetyTape.js';
@@ -9,11 +9,11 @@ import { createSafetyTape } from './safetyTape.js';
 // 由下往上:鑄鐵底座、拋光鋼立柱、可升降工作台(升降搖把、鎖緊把手)、機頭(馬達、皮帶輪、主軸套筒)、三支進給手柄、開關、夾頭、皮帶輪蓋。
 export function createDrillPress(parent) {
   const g = group(parent, 'drillPress', DRILL_PRESS.base, [0, -Math.PI / 2, 0]);
-  const cast = toon(C.castIron), paint = toon(C.machineWarm), cream = toon(C.machineCream);
-  const steel = metalMat(C.steelBright, true), dark = toon(C.steelDark), knob = toon(C.gripBlack);
+  const cast = std(C.castIron), paint = std(C.machineWarm), cream = std(C.machineCream);
+  const steel = metalMat(C.steelBright, true), dark = std(C.steelDark), knob = std(C.gripBlack);
   // 底座
   mk(g, rbox(0.42, 0.06, 0.55, 0.012), cast, { pos: [0, 0.03, 0.02] });
-  mk(g, rbox(0.3, 0.012, 0.3, 0.004), toon(C.steel), { pos: [0, 0.066, 0.08] });
+  mk(g, rbox(0.3, 0.012, 0.3, 0.004), std(C.steel), { pos: [0, 0.066, 0.08] });
   mk(g, cyl(0.07, 0.08, 0.04, 20), cast, { pos: [0, 0.08, -0.17] });
   // 立柱
   mk(g, cyl(0.036, 0.036, 1.3, 20), steel, { pos: [0, 0.75, -0.17] });
@@ -42,10 +42,10 @@ export function createDrillPress(parent) {
   // 馬達(後方)
   mk(g, cyl(0.075, 0.075, 0.22, 20), paint, { pos: [0, hy + 0.05, -0.38] });
   mk(g, cyl(0.06, 0.075, 0.03, 20), cast, { pos: [0, hy - 0.075, -0.38] });
-  for (let i = 0; i < 5; i++) mk(g, torus(0.076, 0.004, 4, 24), cream, { pos: [0, hy + 0.0 + i * 0.03, -0.38], rot: [Math.PI / 2, 0, 0], outline: false });
+  for (let i = 0; i < 5; i++) mk(g, torus(0.076, 0.004, 4, 24), cream, { pos: [0, hy + 0.0 + i * 0.03, -0.38], rot: [Math.PI / 2, 0, 0] });
   // 主軸套筒 + 夾頭
   mk(g, cyl(0.032, 0.032, 0.14, 16), steel, { pos: [0, hy - 0.18, 0.08] });
-  mk(g, cyl(0.026, 0.018, 0.07, 16), toon(C.steel), { pos: [0, hy - 0.285, 0.08] });
+  mk(g, cyl(0.026, 0.018, 0.07, 16), std(C.steel), { pos: [0, hy - 0.285, 0.08] });
   mk(g, cyl(0.004, 0.003, 0.07, 8), dark, { pos: [0, hy - 0.355, 0.08] });
   // 進給手柄 ×3(右側輪轂)
   const hub = group(g, 'feedHub', [0.13, hy - 0.06, 0.02]);
@@ -57,11 +57,11 @@ export function createDrillPress(parent) {
     mk(arm, sphere(0.016), knob, { pos: [0, 0.205, 0] });
   }
   // 深度擋圈刻度環
-  mk(g, cyl(0.03, 0.03, 0.02, 16), toon(C.steel), { pos: [-0.13, hy - 0.06, 0.02], rot: [0, 0, Math.PI / 2] });
+  mk(g, cyl(0.03, 0.03, 0.02, 16), std(C.steel), { pos: [-0.13, hy - 0.06, 0.02], rot: [0, 0, Math.PI / 2] });
   // 開關(正面)
-  mk(g, rbox(0.07, 0.1, 0.03, 0.008), toon('#E2DED4'), { pos: [0.07, hy + 0.03, 0.19] });
-  mk(g, rbox(0.03, 0.02, 0.012, 0.004), toon('#8A8F92'), { pos: [0.07, hy + 0.05, 0.208] });
-  mk(g, rbox(0.03, 0.02, 0.012, 0.004), toon('#C9C2B8'), { pos: [0.07, hy + 0.01, 0.208] });
+  mk(g, rbox(0.07, 0.1, 0.03, 0.008), std('#E2DED4'), { pos: [0.07, hy + 0.03, 0.19] });
+  mk(g, rbox(0.03, 0.02, 0.012, 0.004), std('#8A8F92'), { pos: [0.07, hy + 0.05, 0.208] });
+  mk(g, rbox(0.03, 0.02, 0.012, 0.004), std('#C9C2B8'), { pos: [0.07, hy + 0.01, 0.208] });
   // 夾頭鑰匙(掛在側邊)
   mk(g, cyl(0.004, 0.004, 0.05, 6), dark, { pos: [-0.125, hy + 0.05, 0.1] });
   createSafetyTape(g, 0.85, 0.9, [0, 0.05]);

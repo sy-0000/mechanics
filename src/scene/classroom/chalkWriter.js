@@ -125,8 +125,7 @@ export class ChalkZone {
 
   mesh() {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(this.wM, this.hM),
-      new THREE.MeshBasicMaterial({ map: this.texture, transparent: true, depthWrite: false, toneMapped: false }));
-    m.userData.outline = false; m.userData.dynamic = true; m.renderOrder = 2; m.name = `chalk-${this.name}`;
+      new THREE.MeshBasicMaterial({ map: this.texture, transparent: true, depthWrite: false, toneMapped: false })); m.userData.dynamic = true; m.renderOrder = 2; m.name = `chalk-${this.name}`;
     return m;
   }
 

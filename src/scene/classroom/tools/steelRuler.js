@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { makeCanvas, canvasTexture } from '../../../materials/canvasTex.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { rbox, mk, group } from '../util/geo.js';
 
 // 鋼尺:拉絲鋼面 + 黑色刻度線(無數字)。沿本地 +X,length 30 或 60 cm。
@@ -21,9 +21,9 @@ function scaleTex(len) {
 export function createSteelRuler(parent, { pos, rot, length = 0.3 } = {}) {
   const g = group(parent, `steelRuler${Math.round(length * 100)}`, pos, rot);
   const w = length > 0.4 ? 0.03 : 0.025;
-  mk(g, rbox(length, 0.0012, w, 0.0005), toon('#C8CCCE'), { pos: [0, 0.0006, 0] });
-  const face = mk(g, new THREE.PlaneGeometry(length, w), toon('#ffffff', { map: scaleTex(length), key: `ruler${length}` }), { pos: [0, 0.00125, 0], rot: [-Math.PI / 2, 0, 0], outline: false });
+  mk(g, rbox(length, 0.0012, w, 0.0005), std('#C8CCCE'), { pos: [0, 0.0006, 0] });
+  const face = mk(g, new THREE.PlaneGeometry(length, w), std('#ffffff', { map: scaleTex(length), key: `ruler${length}` }), { pos: [0, 0.00125, 0], rot: [-Math.PI / 2, 0, 0] });
   // 吊孔
-  mk(g, new THREE.CircleGeometry(0.003, 12), toon('#55585A'), { pos: [-length / 2 + 0.012, 0.0013, 0], rot: [-Math.PI / 2, 0, 0], outline: false });
+  mk(g, new THREE.CircleGeometry(0.003, 12), std('#55585A'), { pos: [-length / 2 + 0.012, 0.0013, 0], rot: [-Math.PI / 2, 0, 0] });
   return g;
 }

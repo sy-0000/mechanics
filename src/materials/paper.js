@@ -1,5 +1,5 @@
 import { makeCanvas, canvasTexture, rng } from './canvasTex.js';
-import { toon } from './toon.js';
+import { std } from './standard.js';
 
 // A3 機構草圖:只有線條、圓、尺寸線與箭頭,沒有任何可讀文字。
 export function sketchTexture(seed = 1) {
@@ -34,5 +34,5 @@ export function sketchTexture(seed = 1) {
   return canvasTexture(c, { repeat: false });
 }
 export function paperMat(seed) {
-  return toon('#ffffff', { map: sketchTexture(seed), key: `paper|${seed}` });
+  return std('#ffffff', { map: sketchTexture(seed), roughness: 0.92, key: `paper|${seed}` });
 }

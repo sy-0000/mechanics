@@ -1,18 +1,14 @@
-import { makeCanvas, canvasTexture, rng } from './canvasTex.js';
-import { toon } from './toon.js';
+import { makeCanvas, canvasTexture } from './canvasTex.js';
+import { std } from './standard.js';
+import * as THREE from 'three';
 
-let brushed = null, file = null;
-export function brushedTexture() {
-  if (brushed) return brushed;
-  const c = makeCanvas(256, 256), g = c.getContext('2d'), r = rng(3);
-  g.fillStyle = '#efefef'; g.fillRect(0, 0, 256, 256);
-  for (let i = 0; i < 400; i++) {
-    const y = r() * 256, v = 200 + r() * 55;
-    g.strokeStyle = `rgba(${v},${v},${v},0.5)`; g.beginPath(); g.moveTo(0, y); g.lineTo(256, y + r() * 2 - 1); g.stroke();
-  }
-  return (brushed = canvasTexture(c));
+// 金屬 PBR:有反光(金屬度 1、環境反射)與磨損(刮痕、磨亮斑、掉漆)。
+export function metalMat(color, brushedFinish = false) {
+  return std(color, { set: 'metal:brushed', roughness: brushedFinish ? 0.85 : 1, metalness: 1, envMapIntensity: 2.4, key: `metal|${color}|${brushedFinish}` });
 }
-/** 銼刀細紋(交叉斜線)。 */
+
+/** 銼刀銼面:交叉細紋(作為反照率細節),金屬度 1。 */
+let file = null;
 export function fileTexture() {
   if (file) return file;
   const c = makeCanvas(128, 128), g = c.getContext('2d');
@@ -22,7 +18,4 @@ export function fileTexture() {
   g.strokeStyle = 'rgba(70,70,70,0.25)';
   for (let i = -128; i < 256; i += 5) { g.beginPath(); g.moveTo(i, 128); g.lineTo(i + 64, 0); g.stroke(); }
   return (file = canvasTexture(c));
-}
-export function metalMat(color, brushedFinish = false) {
-  return brushedFinish ? toon(color, { map: brushedTexture(), key: `metalB|${color}` }) : toon(color);
 }

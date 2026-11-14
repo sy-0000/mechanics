@@ -11,12 +11,12 @@ function hazed(hex, dist) {
   const k = THREE.MathUtils.clamp((dist - 4) / 80, 0, 0.75);
   return new THREE.Color(hex).lerp(FOGC, k);
 }
-const basic = (hex, dist, extra = {}) => new THREE.MeshBasicMaterial({ color: hazed(hex, dist), fog: false, ...extra });
+const basic = (hex, dist, extra = {}) => new THREE.MeshBasicMaterial({ color: hazed(hex, dist).multiplyScalar(0.85), fog: false, ...extra });
 // 帶簡單明暗的卡通材質(窗外也保留卡通感)
 const shadedCache = new Map();
 function shaded(hex, dist) {
   const k = `${hex}|${Math.round(dist)}`;
-  if (!shadedCache.has(k)) shadedCache.set(k, new THREE.MeshLambertMaterial({ color: hazed(hex, dist), fog: false }));
+  if (!shadedCache.has(k)) shadedCache.set(k, new THREE.MeshStandardMaterial({ color: hazed(hex, dist).multiplyScalar(0.62), roughness: 1, metalness: 0, fog: false, envMapIntensity: 0.3 }));
   return shadedCache.get(k);
 }
 
@@ -77,8 +77,8 @@ export function createOutdoor(parent) {
     const tg = group(g, 'tree', [tx, groundY, tz]);
     mk(tg, trunkGeo, shaded('#9C8E80', d), { pos: [0, 1.3, 0] });
     const s = 0.9 + (i % 3) * 0.2;
-    mk(tg, crownGeo, shaded('#B4B096', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
-    mk(tg, crownGeo, shaded('#C0BDA4', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
+    mk(tg, crownGeo, shaded('#A6A28E', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
+    mk(tg, crownGeo, shaded('#B2AE9B', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
   });
   // 遠方校舍(盒子 + 窗帶)
   const bldg = (x, z, w, h, d, ry = 0) => {
@@ -115,11 +115,10 @@ export function createOutdoor(parent) {
   const R = OUTDOOR.backdropR, Hb = 60;
   const back = new THREE.CylinderGeometry(R, R, Hb, 48, 1, true, Math.PI, Math.PI);
   const bd = mk(g, back, new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false }), { pos: [0, groundY + Hb * 0.5 - 14.06, 0] });
-  bd.userData.outline = false;
   // 頂部天空罩(半球)
   const dome = mk(g, new THREE.SphereGeometry(R + 1, 24, 8, Math.PI, Math.PI, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#CFDDE6', side: THREE.BackSide, fog: false }), { pos: [0, groundY + Hb - 14.06 - 0.5, 0] });
 
   // 戶外補光(只影響 Lambert 材質,室內 toon 也會受影響,所以強度很低,且放在窗外)
-  g.traverse(o => { o.userData.outline = false; o.userData.outdoor = true; });
+  g.traverse(o => { o.userData.outdoor = true; });
   return g;
 }

@@ -8,7 +8,7 @@ export function createDust(scene, count = 260) {
   const geo = new THREE.IcosahedronGeometry(0.0022, 0);
   const mat = new THREE.MeshBasicMaterial({ color: '#FFF4D6', transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false });
   const mesh = new THREE.InstancedMesh(geo, mat, count);
-  mesh.userData.dynamic = true; mesh.userData.outline = false; mesh.frustumCulled = false;
+  mesh.userData.dynamic = true; mesh.frustumCulled = false;
   const r = rng(42), seeds = [];
   for (let i = 0; i < count; i++) {
     const zc = WINDOWS.centersZ[i % 3];

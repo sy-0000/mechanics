@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BOARD } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { woodMat } from '../../materials/wood.js';
 import { makeCanvas, canvasTexture, rng } from '../../materials/canvasTex.js';
 import { rbox, cyl, mk, group } from './util/geo.js';
@@ -32,8 +32,8 @@ export function createBlackboard(parent) {
   const g = group(parent, 'blackboard', [cx, cy, cz]);
   const frame = woodMat(C.woodFrame, 'grain', 71);
   // 板面
-  const surface = mk(g, new THREE.PlaneGeometry(W, H), toon('#ffffff', { map: slateTexture(), key: 'slate' }), { pos: [0, 0, 0.012], outline: false, name: 'boardSurface' });
-  mk(g, rbox(W, H, 0.02, 0.004), toon(C.board), { pos: [0, 0, 0] });
+  const surface = mk(g, new THREE.PlaneGeometry(W, H), std('#ffffff', { map: slateTexture(), roughness: 0.88, key: 'slate' }), { pos: [0, 0, 0.012], name: 'boardSurface' });
+  mk(g, rbox(W, H, 0.02, 0.004), std(C.board), { pos: [0, 0, 0] });
   // 木框
   const fw = 0.05;
   mk(g, rbox(W + fw * 2, fw, 0.04, 0.008), frame, { pos: [0, H / 2 + fw / 2, 0.01] });
@@ -46,12 +46,12 @@ export function createBlackboard(parent) {
   mk(tray, rbox(W + 0.06, 0.035, 0.012, 0.003), frame, { pos: [0, 0.012, 0.045] });
   const chalkCols = ['#F4F1E8', '#F4F1E8', '#F4F1E8', '#E9BFA2', '#EEE0A8', '#B4D0B6', '#B2C8DC'];
   chalkCols.forEach((col, i) => {
-    mk(tray, cyl(0.0055, 0.0055, 0.075 - (i % 3) * 0.015, 8), toon(col), { pos: [-0.9 + i * 0.09 + (i > 3 ? 0.25 : 0), 0.015, (i % 2) * 0.012], rot: [0, 0.3 * (i % 3), Math.PI / 2] });
+    mk(tray, cyl(0.0055, 0.0055, 0.075 - (i % 3) * 0.015, 8), std(col), { pos: [-0.9 + i * 0.09 + (i > 3 ? 0.25 : 0), 0.015, (i % 2) * 0.012], rot: [0, 0.3 * (i % 3), Math.PI / 2] });
   });
   // 板擦:木背 + 灰色毛氈
   const eraser = group(tray, 'boardEraser', [0.75, 0.009, 0], [0, 0.15, 0]);
   mk(eraser, rbox(0.13, 0.025, 0.05, 0.005), woodMat(C.woodMid, 'grain', 73), { pos: [0, 0.03, 0] });
-  mk(eraser, rbox(0.13, 0.018, 0.05, 0.004), toon('#8C9094'), { pos: [0, 0.01, 0] });
+  mk(eraser, rbox(0.13, 0.018, 0.05, 0.004), std('#8C9094'), { pos: [0, 0.01, 0] });
 
   // 三分區(書寫層)
   const zones = {};
@@ -68,7 +68,7 @@ export function createBlackboard(parent) {
   for (let y = 0; y < 512; y += 2) { dg.fillStyle = `rgba(240,238,230,${0.25 + dr() * 0.25})`; dg.fillRect(6 + Math.sin(y / 60) * 1.5, y, 3, 2); }
   const divMat = new THREE.MeshBasicMaterial({ map: canvasTexture(divTex, { repeat: false }), transparent: true, depthWrite: false, opacity: 0.7 });
   for (const x of [BOARD.zones.center.x0, BOARD.zones.right.x0]) {
-    const d = mk(zoneRoot, new THREE.PlaneGeometry(0.012, H * 0.94), divMat, { pos: [x, 0, 0.0005], outline: false });
+    const d = mk(zoneRoot, new THREE.PlaneGeometry(0.012, H * 0.94), divMat, { pos: [x, 0, 0.0005] });
     d.userData.dynamic = true; d.renderOrder = 2;
   }
   surface.userData.dynamic = true;

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PEGBOARD } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { woodMat } from '../../materials/wood.js';
 import { makeCanvas, canvasTexture } from '../../materials/canvasTex.js';
 import { rbox, cyl, mk, group, instanced } from './util/geo.js';
@@ -75,7 +75,7 @@ export function createPegboard(parent) {
   const gx = [-1.06, -0.88, -0.7, -0.52];
   instanceTool(T, buildGoggles, gx.map(px => ({ pos: [px, -0.2, 0.02] })), { name: 'goggles' });
   const lens = gogglesLens();
-  instanced(T, lens.geo, lens.mat, gx.map(px => ({ pos: [px, -0.2, 0.046] })), { name: 'gogglesLens' }).userData.outline = false;
+  instanced(T, lens.geo, lens.mat, gx.map(px => ({ pos: [px, -0.2, 0.046] })), { name: 'gogglesLens' });
   gx.forEach(px => { hook(px, -0.13); slot(px, -0.19, 0.18, 0.1); });
   // 剪刀 ×2、尖嘴鉗 ×2
   instanceTool(T, buildScissors, [{ pos: [-0.36, -0.12, 0.01] }, { pos: [-0.27, -0.12, 0.01] }], { name: 'scissors' });
@@ -84,8 +84,8 @@ export function createPegboard(parent) {
   // 熱熔膠槍(專用掛勾)
   createHotGlueGun(T, { pos: [-0.22, -0.36, 0.03] }); slot(-0.2, -0.4, 0.26, 0.16);
   // 線材橫桿:銅線、鋁線、焊錫、灰/黑電線
-  const rod = mk(g, cyl(0.006, 0.006, 0.82, 10), toon(C.steel), { pos: [0.52, -0.06, 0.07], rot: [0, 0, Math.PI / 2] });
-  for (const bx of [0.13, 0.91]) mk(g, rbox(0.012, 0.012, 0.075, 0.003), toon(C.steel), { pos: [bx, -0.06, 0.035] });
+  const rod = mk(g, cyl(0.006, 0.006, 0.82, 10), std(C.steel), { pos: [0.52, -0.06, 0.07], rot: [0, 0, Math.PI / 2] });
+  for (const bx of [0.13, 0.91]) mk(g, rbox(0.012, 0.012, 0.075, 0.003), std(C.steel), { pos: [bx, -0.06, 0.035] });
   [['copper', 0.2], ['aluminum', 0.33], ['solder', 0.46], ['wireGray', 0.62], ['wireBlack', 0.8]].forEach(([kind, px]) => createWireSpool(T, { pos: [px, -0.06 - (kind === 'solder' ? 0.025 : kind.startsWith('wire') ? 0.055 : 0.04), 0.058], kind }));
   // 下方層板:烙鐵架、大小刨刀、白膠 ×2
   const shelfY = -0.5;
@@ -99,9 +99,9 @@ export function createPegboard(parent) {
   instanceTool(T, buildGlueBottle, [{ pos: [0.93, sy, 0.08] }, { pos: [1.01, sy, 0.06] }], { name: 'glue' });
 
   // 掛勾(實例化)
-  instanced(g, cyl(0.0025, 0.0025, 0.04, 6), toon(C.steelBright), hooks, { name: 'pegHooks' }).userData.outline = false;
+  instanced(g, cyl(0.0025, 0.0025, 0.04, 6), std(C.steelBright), hooks, { name: 'pegHooks' });
   // 洞洞板本體(帶輪廓描線)+ 外框
-  mk(g, new THREE.PlaneGeometry(W, H), toon(C.woodLight, { map: boardTexture(W, H), key: 'pegboardTex' }), { pos: [0, 0, 0], outline: false });
+  mk(g, new THREE.PlaneGeometry(W, H), std(C.woodLight, { map: boardTexture(W, H), key: 'pegboardTex' }), { pos: [0, 0, 0] });
   const fr = woodMat(C.woodMid, 'grain', 153);
   mk(g, rbox(W + 0.06, 0.03, 0.04, 0.006), fr, { pos: [0, H / 2 + 0.015, 0] });
   mk(g, rbox(W + 0.06, 0.03, 0.04, 0.006), fr, { pos: [0, -H / 2 - 0.015, 0] });

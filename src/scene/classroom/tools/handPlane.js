@@ -1,5 +1,5 @@
 import { C } from '../../../materials/palette.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { woodMat } from '../../../materials/wood.js';
 import { rbox, cyl, sphere, mk, group, lathe } from '../util/geo.js';
 
@@ -7,7 +7,7 @@ import { rbox, cyl, sphere, mk, group, lathe } from '../util/geo.js';
 export function createHandPlane(parent, { pos, rot, size = 'large' } = {}) {
   const s = size === 'large' ? 1 : 0.68;
   const g = group(parent, `plane-${size}`, pos, rot);
-  const body = woodMat(C.woodMid, 'grain', 101), grip = woodMat(C.woodLight, 'grain', 103), steel = toon(C.steelBright);
+  const body = woodMat(C.woodMid, 'grain', 101), grip = woodMat(C.woodLight, 'grain', 103), steel = std(C.steelBright);
   const L = 0.28 * s, W = 0.065 * s, H = 0.055 * s;
   mk(g, rbox(L, H, W, 0.006), body, { pos: [0, H / 2, 0] });
   // 刀片與楔木(斜插)

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { WINDOWS } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { glassMat } from '../../materials/glass.js';
 import { fabricMat } from '../../materials/fabric.js';
 import { rbox, mk, group, lathe } from './util/geo.js';
@@ -9,7 +9,7 @@ import { rbox, mk, group, lathe } from './util/geo.js';
 // 左牆三扇鋁框橫拉窗(大面透明玻璃)與收起綁好的米色窗簾。
 export function createWindows(parent) {
   const g = group(parent, 'windows');
-  const alu = toon(C.aluFrame), glass = glassMat(0.06), sill = toon('#EEE9DD');
+  const alu = std(C.aluFrame), glass = glassMat(0.06), sill = std('#EEE9DD');
   const curtain = fabricMat(C.curtain), tie = fabricMat('#D9CFB8');
   const { x, w, h, sill: sy } = WINDOWS;
   const fw = 0.045;
@@ -38,10 +38,10 @@ export function createWindows(parent) {
       mk(s, rbox(0.03, 0.03, sw), alu, { pos: [0, -sh / 2 + 0.015, 0] });
       mk(s, rbox(0.03, sh, 0.03), alu, { pos: [0, 0, -sw / 2 + 0.015] });
       mk(s, rbox(0.03, sh, 0.03), alu, { pos: [0, 0, sw / 2 - 0.015] });
-      const gp = mk(s, new THREE.PlaneGeometry(sw - 0.05, sh - 0.05), glass, { rot: [0, Math.PI / 2, 0], outline: false });
+      const gp = mk(s, new THREE.PlaneGeometry(sw - 0.05, sh - 0.05), glass, { rot: [0, Math.PI / 2, 0] });
       gp.renderOrder = 1;
       // 拉手
-      mk(s, rbox(0.02, 0.12, 0.012), toon(C.steelDark), { pos: [0.02, 0, k ? -sw / 2 + 0.05 : sw / 2 - 0.05] });
+      mk(s, rbox(0.02, 0.12, 0.012), std(C.steelDark), { pos: [0.02, 0, k ? -sw / 2 + 0.05 : sw / 2 - 0.05] });
     });
     // 室內窗台板
     mk(wg, rbox(0.2, 0.03, w + 0.12, 0.008), sill, { pos: [0.08, -0.01, 0] });
@@ -54,6 +54,6 @@ export function createWindows(parent) {
     }
   });
   // 窗簾軌道
-  mk(g, rbox(0.03, 0.03, 7.3, 0.005), toon(C.alu), { pos: [x + 0.16, sy + h + 0.15, -0.05] });
+  mk(g, rbox(0.03, 0.03, 7.3, 0.005), std(C.alu), { pos: [x + 0.16, sy + h + 0.15, -0.05] });
   return g;
 }

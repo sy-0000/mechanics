@@ -1,5 +1,5 @@
 import { C } from '../../../materials/palette.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { cyl, mk, group } from '../util/geo.js';
 
 // 線軸/線捆:兩片灰色側盤 + 中間捲線。kind: copper | aluminum | solder | wireGray | wireBlack。軸線沿本地 Z(掛在橫桿上)。
@@ -12,9 +12,9 @@ const SPEC = {
 };
 export function createWireSpool(parent, { pos, rot, kind = 'copper' } = {}) {
   const s = SPEC[kind], g = group(parent, `spool-${kind}`, pos, rot);
-  const wire = toon(s.wire);
+  const wire = std(s.wire);
   if (s.flange) {
-    const f = toon(s.flange);
+    const f = std(s.flange);
     for (const z of [-s.w / 2, s.w / 2]) mk(g, cyl(s.r + 0.008, s.r + 0.008, 0.004, 20), f, { pos: [0, 0, z], rot: [Math.PI / 2, 0, 0] });
     mk(g, cyl(s.r * 0.9, s.r * 0.9, s.w - 0.004, 20), wire, { rot: [Math.PI / 2, 0, 0] });
   } else {

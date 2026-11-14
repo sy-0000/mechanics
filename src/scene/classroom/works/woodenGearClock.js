@@ -1,6 +1,6 @@
 import { C } from '../../../materials/palette.js';
 import { woodMat } from '../../../materials/wood.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { rbox, cyl, mk, group, extrude } from '../util/geo.js';
 import { gearShape } from './gearBoard.js';
 
@@ -14,8 +14,8 @@ export function createWoodenGearClock(parent, { pos, rot } = {}) {
   mk(g, extrude(gearShape(0.055, 24, 0.006, 0.004), 0.006, 0.0008), gear, { pos: [0, 0.2, 0.0] });
   mk(g, extrude(gearShape(0.03, 12, 0.005, 0.003), 0.006, 0.0008), gear, { pos: [0.045, 0.13, -0.01] });
   mk(g, extrude(gearShape(0.025, 30, 0.003, 0.003), 0.005, 0.0008), gear, { pos: [-0.03, 0.115, -0.006] });
-  mk(g, rbox(0.006, 0.05, 0.004, 0.0015), toon('#8E8578'), { pos: [0, 0.22, 0.008], rot: [0, 0, 0.6] });
-  mk(g, rbox(0.004, 0.07, 0.004, 0.0015), toon('#8E8578'), { pos: [0.02, 0.215, 0.01], rot: [0, 0, -0.9] });
+  mk(g, rbox(0.006, 0.05, 0.004, 0.0015), std('#8E8578'), { pos: [0, 0.22, 0.008], rot: [0, 0, 0.6] });
+  mk(g, rbox(0.004, 0.07, 0.004, 0.0015), std('#8E8578'), { pos: [0.02, 0.215, 0.01], rot: [0, 0, -0.9] });
   // 鐘擺
   mk(g, rbox(0.004, 0.12, 0.003, 0.001), frame, { pos: [0, 0.1, 0.012], rot: [0, 0, 0.08] });
   mk(g, cyl(0.016, 0.016, 0.006, 16), gear, { pos: [-0.004, 0.045, 0.012], rot: [Math.PI / 2, 0, 0] });

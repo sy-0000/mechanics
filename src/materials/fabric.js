@@ -1,17 +1,7 @@
-import { makeCanvas, canvasTexture, rng } from './canvasTex.js';
-import { toon } from './toon.js';
 import * as THREE from 'three';
+import { std } from './standard.js';
 
-let canvasWeave = null;
-export function weaveTexture() {
-  if (canvasWeave) return canvasWeave;
-  const c = makeCanvas(128, 128), g = c.getContext('2d'), r = rng(11);
-  g.fillStyle = '#f2f2f2'; g.fillRect(0, 0, 128, 128);
-  for (let i = 0; i < 128; i += 2) {
-    g.fillStyle = `rgba(0,0,0,${0.02 + r() * 0.03})`; g.fillRect(0, i, 128, 1); g.fillRect(i, 0, 1, 128);
-  }
-  return (canvasWeave = canvasTexture(c));
-}
+// 帆布 / 窗簾:織紋法線,霧面。
 export function fabricMat(color) {
-  return toon(color, { map: weaveTexture(), side: THREE.DoubleSide, key: `fabric|${color}` });
+  return std(color, { set: 'fabric', roughness: 1, metalness: 0, side: THREE.DoubleSide, normalScale: 0.6, key: `fabric|${color}` });
 }

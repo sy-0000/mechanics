@@ -1,12 +1,12 @@
 import { C } from '../../../materials/palette.js';
 import { woodMat } from '../../../materials/wood.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { rbox, cyl, mk, group } from '../util/geo.js';
 
 // 木製伸縮夾(剪刀式連桿):交叉的木條、圓木銷,前端一對夾爪,後端兩支握把。站立展示在小座上。
 export function createScissorExtender(parent, { pos, rot } = {}) {
   const g = group(parent, 'scissorExtender', pos, rot);
-  const slat = woodMat(C.woodLight, 'grain', 251), pin = toon('#D9CDBB');
+  const slat = woodMat(C.woodLight, 'grain', 251), pin = std('#D9CDBB');
   const n = 4, L = 0.09, a = 0.55, dx = L * Math.cos(a);
   for (let i = 0; i < n; i++) {
     const x = -0.15 + i * dx;

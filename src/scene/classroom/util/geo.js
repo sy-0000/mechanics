@@ -42,7 +42,7 @@ export function plane(w, h, sx = 1, sy = 1) {
 
 /**
  * 建立 Mesh 並放入 parent。
- * opts: pos [x,y,z], rot [x,y,z], scale, cast, receive, outline, name
+ * opts: pos [x,y,z], rot [x,y,z], scale, cast, receive, name
  */
 export function mk(parent, geo, mat, opts = {}) {
   const m = new THREE.Mesh(geo, mat);
@@ -50,7 +50,6 @@ export function mk(parent, geo, mat, opts = {}) {
   if (opts.rot) m.rotation.set(...opts.rot);
   if (opts.scale !== undefined) Array.isArray(opts.scale) ? m.scale.set(...opts.scale) : m.scale.setScalar(opts.scale);
   if (opts.name) m.name = opts.name;
-  if (opts.outline === false) m.userData.outline = false;
   m.castShadow = !!opts.cast; m.receiveShadow = !!opts.receive;
   parent.add(m);
   return m;
@@ -66,7 +65,7 @@ export function group(parent, name, pos, rot) {
 
 /** 標記為近景(即時陰影)。 */
 export function markNear(obj, cast = true) {
-  obj.traverse(o => { if (o.isMesh && !o.userData.isOutline) { o.castShadow = cast; o.receiveShadow = true; o.userData.near = true; } });
+  obj.traverse(o => { if (o.isMesh) { o.castShadow = cast; o.receiveShadow = true; o.userData.near = true; } });
   return obj;
 }
 /** 標記為不參與合併(動畫物件、掛載點)。 */

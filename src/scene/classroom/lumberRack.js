@@ -1,6 +1,6 @@
 import { LUMBER_RACK } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { woodMat } from '../../materials/wood.js';
 import { rbox, mk, group } from './util/geo.js';
 import { createMdfStack } from './mdfStack.js';
@@ -10,7 +10,7 @@ import { createTimberStrips } from './timberStrips.js';
 export function createLumberRack(parent) {
   const { x0, x1, z, depth, levels } = LUMBER_RACK;
   const g = group(parent, 'lumberRack');
-  const steel = toon('#B4B8BA'), zc = z - depth / 2 - 0.01;
+  const steel = std('#B4B8BA'), zc = z - depth / 2 - 0.01;
   const W = x1 - x0;
   // 立柱
   for (const x of [x0 + 0.02, x0 + W / 2, x1 - 0.02]) for (const dz of [-depth / 2 + 0.02, depth / 2 - 0.02])

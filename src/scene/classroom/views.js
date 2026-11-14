@@ -31,7 +31,7 @@ export function createViews({ renderer, camera, domElement, fog, dof }) {
     const v = DESKTOP_VIEWS[name];
     camera.position.set(...v.eye); controls.target.set(...v.target); camera.lookAt(controls.target);
     applyLimits(name); controls.update();
-    fog.set(name, 0); dof?.setEnabled(name === 'bench', 0);
+    fog.set(name, 0); dof?.setDof(name === 'bench', 0);
   }
 
   function glideTo(name, dur = 2.5) {
@@ -45,13 +45,13 @@ export function createViews({ renderer, camera, domElement, fog, dof }) {
     controls.minAzimuthAngle = controls.minPolarAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.maxPolarAngle = Math.PI;
     controls.minDistance = 0; controls.maxDistance = Infinity;
     glide = { curve, t0, t2, start: performance.now() / 1000, dur, name };
-    fog.set(name, dur); dof?.setEnabled(name === 'bench', dur);
+    fog.set(name, dur); dof?.setDof(name === 'bench', dur);
   }
 
   // ---------- VR ----------
   const fadeMat = new THREE.MeshBasicMaterial({ color: C.fog, transparent: true, opacity: 0, side: THREE.BackSide, depthTest: false, depthWrite: false, fog: false });
   const fadeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 12), fadeMat);
-  fadeMesh.renderOrder = 10000; fadeMesh.frustumCulled = false; fadeMesh.visible = false; fadeMesh.userData.outline = false;
+  fadeMesh.renderOrder = 10000; fadeMesh.frustumCulled = false; fadeMesh.visible = false;
   camera.add(fadeMesh);
   let baseSpace = null, fade = null, needsRecenter = false;
   renderer.xr.addEventListener('sessionstart', () => {
@@ -126,7 +126,7 @@ export function createViews({ renderer, camera, domElement, fog, dof }) {
       glide = null; controls.enabled = true;
       controls.minAzimuthAngle = controls.minPolarAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.maxPolarAngle = Math.PI;
       controls.minDistance = 0; controls.maxDistance = Infinity;
-      camera.position.set(...eye); controls.target.set(...target); controls.update(); dof?.setEnabled(false, 0); fog.set('default', 0);
+      camera.position.set(...eye); controls.target.set(...target); controls.update(); dof?.setDof(false, 0); fog.set('default', 0);
     },
     get moving() { return !!glide || !!fade; },
     onChange(f) { listeners.push(f); },

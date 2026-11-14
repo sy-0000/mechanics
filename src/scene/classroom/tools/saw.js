@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { C } from '../../../materials/palette.js';
-import { toon } from '../../../materials/toon.js';
+import { std } from '../../../materials/standard.js';
 import { woodMat } from '../../../materials/wood.js';
 import { rbox, cyl, mk, group, extrude, tube } from '../util/geo.js';
 
@@ -8,7 +8,7 @@ import { rbox, cyl, mk, group, extrude, tube } from '../util/geo.js';
 // 本地平面為 XY(掛牆時面向 +Z)。
 export function createSaw(parent, { pos, rot, type = 'back' } = {}) {
   const g = group(parent, `saw-${type}`, pos, rot);
-  const steel = toon(C.steelBright), dark = toon(C.steelDark), handle = woodMat(C.woodLight, 'grain', 111);
+  const steel = std(C.steelBright), dark = std(C.steelDark), handle = woodMat(C.woodLight, 'grain', 111);
   if (type === 'back') {
     mk(g, rbox(0.26, 0.075, 0.0012, 0.0004), steel, { pos: [0, 0, 0] });
     mk(g, rbox(0.265, 0.014, 0.006, 0.002), dark, { pos: [0, 0.04, 0] });
@@ -21,7 +21,7 @@ export function createSaw(parent, { pos, rot, type = 'back' } = {}) {
     mk(g, extrude(s, 0.02, 0.003), handle, { pos: [0.125, 0, 0] });
   } else {
     mk(g, tube([[-0.13, -0.01, 0], [-0.13, 0.09, 0], [0, 0.11, 0], [0.13, 0.09, 0], [0.13, -0.01, 0]], 0.004, 30, 6), steel, {});
-    mk(g, cyl(0.0006, 0.0006, 0.26, 4), dark, { pos: [0, -0.01, 0], rot: [0, 0, Math.PI / 2], outline: false });
+    mk(g, cyl(0.0006, 0.0006, 0.26, 4), dark, { pos: [0, -0.01, 0], rot: [0, 0, Math.PI / 2] });
     mk(g, cyl(0.012, 0.014, 0.1, 12), handle, { pos: [0.13, -0.065, 0] });
     mk(g, cyl(0.008, 0.008, 0.015, 10), dark, { pos: [0.13, -0.01, 0] });
   }

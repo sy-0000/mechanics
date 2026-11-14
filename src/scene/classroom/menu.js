@@ -33,7 +33,7 @@ export function createMenu({ renderer, scene, camera, domElement }) {
   const tex = new THREE.CanvasTexture(canvas); tex.colorSpace = THREE.SRGBColorSpace;
   const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, fog: false, toneMapped: false });
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
-  panel.visible = false; panel.renderOrder = 9000; panel.userData.outline = false; panel.name = 'menuPanel';
+  panel.visible = false; panel.renderOrder = 9000; panel.name = 'menuPanel';
   const iconImgs = new Map();
 
   const all = () => [...items, ...FIXED];
@@ -75,7 +75,7 @@ export function createMenu({ renderer, scene, camera, domElement }) {
     hands[i].add(handFactory.createHandModel(hands[i], 'spheres'));
     // 簡易手把模型(不從 CDN 載入)
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.07, 4, 10), new THREE.MeshLambertMaterial({ color: '#D9D4C8' }));
-    body.rotation.x = Math.PI / 2 - 0.5; body.userData.outline = false; grips[i].add(body);
+    body.rotation.x = Math.PI / 2 - 0.5; grips[i].add(body);
     const ray = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, -1)]), new THREE.LineBasicMaterial({ color: '#F2EFE6', transparent: true, opacity: 0.6 }));
     ray.scale.z = 0.6; ray.visible = false; ray.name = 'ray'; ctrls[i].add(ray);
     ctrls[i].addEventListener('connected', e => { handedness.set(i, e.data); ray.visible = !e.data.hand && open; });
@@ -87,7 +87,7 @@ export function createMenu({ renderer, scene, camera, domElement }) {
 
   // 手勢:左手掌上的小按鈕
   const palmBtn = new THREE.Mesh(new THREE.CircleGeometry(0.018, 24), new THREE.MeshBasicMaterial({ color: '#F2EFE6', transparent: true, opacity: 0.9, side: THREE.DoubleSide, fog: false }));
-  palmBtn.visible = false; palmBtn.userData.outline = false; scene.add(palmBtn);
+  palmBtn.visible = false; scene.add(palmBtn);
 
   function placeVR() {
     const li = leftIndex(); if (li === undefined) return;

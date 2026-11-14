@@ -1,11 +1,11 @@
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { rbox, cyl, mk, group, markDynamic } from './util/geo.js';
 
 // 吊扇:吊桿、馬達殼、四片奶油白扇葉,緩慢轉動(可在設定中關閉)。
 export function createCeilingFan(parent, pos) {
   const g = group(parent, 'ceilingFan', pos);
-  const body = toon('#EDE8DC'), blade = toon('#F2EEE4'), metal = toon(C.steel);
+  const body = std('#EDE8DC'), blade = std('#F2EEE4'), metal = std(C.steel);
   mk(g, cyl(0.07, 0.08, 0.04, 16), body, { pos: [0, -0.02, 0] });
   mk(g, cyl(0.012, 0.012, 0.35, 8), metal, { pos: [0, -0.2, 0] });
   const rotor = group(g, 'rotor', [0, -0.42, 0]);

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { CLOCK } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { makeCanvas, canvasTexture } from '../../materials/canvasTex.js';
 import { cyl, torus, rbox, mk, group } from './util/geo.js';
 
@@ -16,9 +16,9 @@ export function createWallClock(parent) {
     x.save(); x.rotate(i * Math.PI / 30);
     const big = i % 5 === 0; x.fillRect(-(big ? 3 : 1), -118, big ? 6 : 2, big ? 18 : 8); x.restore();
   }
-  mk(g, cyl(R, R, 0.02, 40), toon('#F7F0DE', { map: canvasTexture(c, { repeat: false }), key: 'clockface' }), { rot: [Math.PI / 2, 0, 0], outline: false });
-  mk(g, torus(R + 0.008, 0.012, 8, 40), toon(C.machineWarm), { pos: [0, 0, 0.008] });
-  const hand = toon('#6B6F72');
+  mk(g, cyl(R, R, 0.02, 40), std('#F7F0DE', { map: canvasTexture(c, { repeat: false }), key: 'clockface' }), { rot: [Math.PI / 2, 0, 0] });
+  mk(g, torus(R + 0.008, 0.012, 8, 40), std(C.machineWarm), { pos: [0, 0, 0.008] });
+  const hand = std('#6B6F72');
   const h = 8 + 20 / 60, m = 20;
   const hh = group(g, 'hourHand', [0, 0, 0.016], [0, 0, -h / 12 * Math.PI * 2]);
   mk(hh, rbox(0.012, R * 0.55, 0.004, 0.0015), hand, { pos: [0, R * 0.22, 0] });

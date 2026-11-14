@@ -20,7 +20,7 @@ const classroom = createClassroom({
 });
 classroom.start();
 setupVRButton(renderer, document.getElementById('vr'));
-window.classroom = classroom; // 方便在主控台測試 API
+window.classroom = classroom; window.__scene = scene; // 方便在主控台測試 API
 
 // ---------------- 示範內容(教具專案會取代這段) ----------------
 const DEMO = {

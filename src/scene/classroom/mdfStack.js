@@ -1,7 +1,7 @@
 import { MDF } from './layout.js';
 import { C } from '../../materials/palette.js';
 import { woodMat } from '../../materials/wood.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { rbox, group, instanced, mk } from './util/geo.js';
 import { rng } from '../../materials/canvasTex.js';
 

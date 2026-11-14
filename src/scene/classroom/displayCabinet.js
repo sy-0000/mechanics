@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { CABINET } from './layout.js';
 import { C } from '../../materials/palette.js';
-import { toon } from '../../materials/toon.js';
+import { std } from '../../materials/standard.js';
 import { woodMat } from '../../materials/wood.js';
 import { glassMat } from '../../materials/glass.js';
 import { rbox, cyl, mk, group } from './util/geo.js';
@@ -21,19 +21,19 @@ export function createDisplayCabinet(parent) {
   const { x0, x1, z, depth: D, h: H, shelves } = CABINET;
   const W = x1 - x0;
   const g = group(parent, 'displayCabinet', [(x0 + x1) / 2, 0, z - D / 2 - 0.005], [0, Math.PI, 0]);
-  const frame = woodMat(C.woodMid, 'grain', 331), inner = toon('#F6E9D2'), shelfMat = woodMat(C.woodLight, 'laminate', 333);
+  const frame = woodMat(C.woodMid, 'grain', 331), inner = std('#F6E9D2'), shelfMat = woodMat(C.woodLight, 'laminate', 333);
   const t = 0.025;
   // 櫃體
   mk(g, rbox(W, 0.1, D, 0.006), frame, { pos: [0, 0.05, 0] });
   mk(g, rbox(W + 0.03, 0.04, D + 0.03, 0.008), frame, { pos: [0, H - 0.02, 0] });
   for (const s of [-1, 1]) mk(g, rbox(t, H, D, 0.005), frame, { pos: [s * (W / 2 - t / 2), H / 2, 0] });
-  mk(g, rbox(W, H, 0.012, 0.003), inner, { pos: [0, H / 2, -D / 2 + 0.006], outline: false });
+  mk(g, rbox(W, H, 0.012, 0.003), inner, { pos: [0, H / 2, -D / 2 + 0.006] });
   // 暖光:背板上半帶淡淡的暖光暈(發光面)
-  const glow = toon('#FFF1D6', { emissive: '#FFE7BE', emissiveIntensity: 0.35, key: 'cabGlow' });
+  const glow = std('#FFF1D6', { emissive: '#FFE7BE', emissiveIntensity: 1.6, key: 'cabGlow' });
   // 層板 + 層板下方的燈條
   const levels = [0.1, ...shelves];
   shelves.forEach(y => mk(g, rbox(W - 2 * t, 0.018, D - 0.03, 0.004), shelfMat, { pos: [0, y, 0.005] }));
-  [...shelves, H - 0.04].forEach(y => mk(g, rbox(W - 0.2, 0.008, 0.02, 0.003), glow, { pos: [0, y - 0.014, D / 2 - 0.06], outline: false }));
+  [...shelves, H - 0.04].forEach(y => mk(g, rbox(W - 0.2, 0.008, 0.02, 0.003), glow, { pos: [0, y - 0.014, D / 2 - 0.06] }));
   // 玻璃門(兩扇,木框)
   const dw = (W - 2 * t) / 2;
   for (const s of [-1, 1]) {
@@ -43,9 +43,9 @@ export function createDisplayCabinet(parent) {
     mk(dg, rbox(dw, 0.04, 0.02, 0.004), frame, { pos: [0, -fh / 2, 0] });
     mk(dg, rbox(0.04, fh, 0.02, 0.004), frame, { pos: [-dw / 2 + 0.02, 0, 0] });
     mk(dg, rbox(0.04, fh, 0.02, 0.004), frame, { pos: [dw / 2 - 0.02, 0, 0] });
-    const gl = mk(dg, new THREE.PlaneGeometry(dw - 0.08, fh - 0.04), glassMat(0.1), { outline: false });
+    const gl = mk(dg, new THREE.PlaneGeometry(dw - 0.08, fh - 0.04), glassMat(0.1), {});
     gl.renderOrder = 1;
-    mk(dg, cyl(0.007, 0.007, 0.08, 8), toon(C.steel), { pos: [-s * (dw / 2 - 0.05), 0, 0.02] });
+    mk(dg, cyl(0.007, 0.007, 0.08, 8), std(C.steel), { pos: [-s * (dw / 2 - 0.05), 0, 0.02] });
   }
   // 作品(全部自然木色,僅極淡彩繪)
   const y1 = levels[0] + 0.0, y2 = shelves[0] + 0.009, y3 = shelves[1] + 0.009, y4 = shelves[2] + 0.009;
