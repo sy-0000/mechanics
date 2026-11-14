@@ -27,7 +27,7 @@ export async function createAid(ctx) {
 
   // ---------------- 靜態:底座、立柱、頂端樞軸座、導軌、砧板 ----------------
   const st = kit.body('crusherFrame');
-  st.add(geo.box(0.34, BASE_TOP, 0.18), { color: SEM.frame, sw: 'wood', pos: [0.02, BASE_TOP / 2, Z0] });
+  st.add(geo.box(0.4, BASE_TOP, 0.18), { color: SEM.frame, sw: 'wood', pos: [0.05, BASE_TOP / 2, Z0] });
   st.add(geo.box(0.05, OY + 0.03 - BASE_TOP, 0.04), { color: SEM.frame, sw: 'wood', pos: [OX - 0.075, (OY + 0.03 + BASE_TOP) / 2, Z0 - 0.045] });
   st.add(geo.box(0.12, 0.03, 0.04), { color: SEM.frame, sw: 'wood', pos: [OX - 0.035, OY + 0.015, Z0 - 0.045] });
   st.add(geo.box(0.03, 0.03, 0.05), { color: SEM.frame, sw: 'wood', pos: [OX, OY, Z0 - 0.02] });
@@ -38,7 +38,7 @@ export async function createAid(ctx) {
   // 越過中心的止擋
   st.add(geo.box(0.012, 0.012, 0.012), { color: N.black, sw: 'rubber', pos: [OX - 0.02, OY - L - 0.01, Z0 - 0.02] });
   // 鐵罐的放置架與壓扁後的收集盤
-  st.add(geo.box(0.11, 0.008, 0.1), { color: N.steelDark, sw: 'steel', pos: [0.13, BASE_TOP + 0.004, Z0 + 0.02] });
+  st.add(geo.box(0.2, 0.008, 0.075), { color: N.steelDark, sw: 'steel', pos: [0.15, BASE_TOP + 0.004, Z0 + 0.02] });
   st.add(geo.box(0.09, 0.006, 0.09), { color: N.steelDark, sw: 'steel', pos: [OX - 0.13, 0.003, 0.17] });
   const pb = codePlate('β', 'blue', { w: 0.026 }); st.add(pb.geo, { ...pb, pos: [OX - 0.035, OY + 0.015, Z0 - 0.024] });
   root.add(st.build());
@@ -84,7 +84,7 @@ export async function createAid(ctx) {
     const whole = b1.build(); g.add(whole);
     const b2 = kit.body(`crushed${i}`); b2.add(crumple, { color: N.steel, sw: 'steel', pos: [0, CAN_H / 2 - 0.0, 0] });
     const flat = b2.build(); flat.visible = false; g.add(flat);
-    const home = new THREE.Vector3(0.105 + (i % 2) * 0.05, BASE_TOP + 0.008, Z0 + (i === 2 ? 0.045 : -0.005));
+    const home = new THREE.Vector3(0.085 + i * 0.065, BASE_TOP + 0.008, Z0 + 0.02);
     g.position.copy(home); root.add(g);
     const can = { i, g, whole, flat, home, state: 'ready', anim: null };
     whole.userData.touchable = { onTouch: () => placeCan(can) };

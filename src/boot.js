@@ -47,7 +47,7 @@ export async function boot({ name = '', room = '', clientId, quality, debug = fa
   renderer.domElement.addEventListener('pointerdown', resumeAudio);
   setupVRButton(renderer, document.getElementById('vr'));
 
-  await app.select(aid ?? 'wiper');
+  if (aid !== 'none') await app.select(aid ?? 'wiper');
   if (advanced) app.setAdvanced(true);
   if (view === 'board') setTimeout(() => classroom.views.goTo('board'), 300);
   if (cam) { const v = cam.split(',').map(Number); setTimeout(() => classroom.debugSetCamera(v.slice(0, 3), v.slice(3, 6)), 200); }

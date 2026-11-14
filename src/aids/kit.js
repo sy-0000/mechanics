@@ -93,7 +93,7 @@ function createKit() {
           float ndv = abs(dot(normalize(nonPerturbedNormal), normalize(vViewPosition)));
           float edge = smoothstep(0.45, 0.12, ndv);
           vec3 bp = mix(vec3(0.106, 0.31, 0.56) * 0.62, vec3(0.95, 0.97, 1.0), edge);
-          gl_FragColor = vec4(mix(gl_FragColor.rgb, bp, bpk), mix(gl_FragColor.a, mix(0.38, 0.96, edge), bpk));
+          gl_FragColor = vec4(mix(gl_FragColor.rgb, bp, bpk), mix(gl_FragColor.a, mix(0.62, 0.96, edge), bpk));
         }
       }`);
   };
@@ -252,7 +252,7 @@ export const geo = {
   },
   /** 漸開線正齒輪(模數 m 單位 mm),齒合併成一個幾何,中心有軸孔;齒 0 沿 +X。 */
   gear: (m, z, t = 0.008, bore = 0.004) => cached(`g${m},${z},${t},${bore}`, () => {
-    const pts = gearProfile(m, z, { flankSteps: 5, tipSteps: 2, rootSteps: 2 }).map(([x, y]) => new THREE.Vector2(x / 1000, y / 1000));
+    const pts = gearProfile(m, z, { flankSteps: z > 25 ? 2 : 3, tipSteps: 1, rootSteps: 1 }).map(([x, y]) => new THREE.Vector2(x / 1000, y / 1000));
     const s = new THREE.Shape(pts);
     if (bore > 0) { const h = new THREE.Path(); h.absarc(0, 0, bore, 0, Math.PI * 2, true); s.holes.push(h); }
     const rp = m * z / 2000;

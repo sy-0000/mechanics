@@ -104,8 +104,8 @@ export async function createAid(ctx) {
   const wheel = new THREE.Group(); wheel.position.set(RA.x, RA.y, Z0); inner.add(wheel);
   const wb = kit.body('rearWheel');
   [14, 21, 28].forEach((z, i) => wb.add(geo.gear(4.2, z, 0.003, 0.004).clone().scale(rOf(z) / (4.2 * z / 2000), rOf(z) / (4.2 * z / 2000), 1), { color: SEM.output, sw: 'paint', pos: [0, 0, 0.006 - i * 0.005] }));
-  wb.add(geo.torus(WHEEL_R - 0.008, 0.009, 64, 10), { color: N.rubber, sw: 'rubber', pos: [0, 0, -0.035] });    // 輪胎
-  wb.add(geo.torus(WHEEL_R - 0.019, 0.004, 64, 6), { color: SEM.output, sw: 'paint', pos: [0, 0, -0.035] });   // 輪圈(綠)
+  wb.add(geo.torus(WHEEL_R - 0.008, 0.009, 40, 8), { color: N.rubber, sw: 'rubber', pos: [0, 0, -0.035] });    // 輪胎
+  wb.add(geo.torus(WHEEL_R - 0.019, 0.004, 40, 5), { color: SEM.output, sw: 'paint', pos: [0, 0, -0.035] });   // 輪圈(綠)
   for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; wb.add(geo.cylY(0.0011, WHEEL_R - 0.024, 4), { color: N.steel, sw: 'steel', pos: [Math.cos(a) * (WHEEL_R - 0.024) / 2, Math.sin(a) * (WHEEL_R - 0.024) / 2, -0.035 + (i % 2 ? 0.006 : -0.006)], rot: [0, 0, a - Math.PI / 2] }); }
   wb.add(geo.cylZ(0.012, 0.05, 16), { color: N.steel, sw: 'steel', pos: [0, 0, -0.02] });
   wheel.add(wb.build());
@@ -118,9 +118,9 @@ export async function createAid(ctx) {
 
   // ---------------- 鍊條(黃,InstancedMesh)----------------
   const lb = kit.body('chainLink');
-  lb.add(geo.box(PITCH * 1.25, 0.0042, 0.003, 0.0012), { color: SEM.coupler, sw: 'paint', pos: [0, 0, 0.0025] });
-  lb.add(geo.box(PITCH * 1.25, 0.0042, 0.003, 0.0012), { color: SEM.coupler, sw: 'paint', pos: [0, 0, -0.0025] });
-  lb.add(geo.cylZ(0.0016, 0.008, 6), { color: N.steel, sw: 'steel', pos: [PITCH / 2, 0, 0] });
+  lb.add(new THREE.BoxGeometry(PITCH * 1.25, 0.0042, 0.003), { color: SEM.coupler, sw: 'paint', pos: [0, 0, 0.0025] });
+  lb.add(new THREE.BoxGeometry(PITCH * 1.25, 0.0042, 0.003), { color: SEM.coupler, sw: 'paint', pos: [0, 0, -0.0025] });
+  lb.add(geo.cylZ(0.0016, 0.008, 5), { color: N.steel, sw: 'steel', pos: [PITCH / 2, 0, 0] });
   const MAXL = 160;
   const chain = lb.instanced(MAXL); inner.add(chain);
   let path = null;

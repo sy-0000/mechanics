@@ -1,30 +1,67 @@
-# mechanics — 生科教室場景
+# 機構教室 VR
 
-以 Three.js 建置的寫實 PBR 國中生活科技教室(早晨窗光、ACES 色調、程序產生的 PBR 貼圖),作為機構教學 VR 的環境。本專案**只有場景**;教具由另一個專案透過掛載點與 API 接上。
+寫實 PBR 的國中生活科技教室 + 六個機構教具(雨刷、引擎、齒輪、腳踏車、時鐘、電動起子)與彩蛋壓罐機。教學內容寫在教室黑板上,老師可以用控場頁讓全班同步。
+
+- Three.js 0.170 + Vite 5,WebXR(Quest 3,手把與手部追蹤)與電腦滑鼠都能完整操作。
+- 部署:一個 Cloudflare Worker(靜態網頁 + Durable Object 即時同步)。
+
+## 本機開發
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173/  (?debug=1 顯示 FPS / draw call / 三角形)
 ```
-- `index.html`:電腦預覽(含示範教具內容;`?demo=0` 關閉、`?view=board`、`?menu=1`、`?quality=vr` 或 `vr-baked`)。
-- `vr.html`:VR 測試頁(vr 檔位、debug 數據、主控台 `[perf]` 記錄)。
-- 按 **Y** 開啟選單。
 
-## 使用方式
-```js
-import { createClassroom } from './src/scene/classroom/index.js';
-const classroom = createClassroom({ renderer, scene, camera, options: { onSelectTeachingAid: id => load(id) } });
-classroom.start();                                   // 或每幀自行呼叫 classroom.update(); classroom.render();
-classroom.anchors.teachingAid.add(myMechanism);      // 桌面掛載區中心(本地 +Z 朝學生)
-classroom.menu.setItems([{ id: 'fourBar', name: '四連桿', icon: '/icons/fourbar.png' }]);
-classroom.board.setZone('center', { title: '四連桿 Four-bar', lines: [
-  { text: 'ω_{4} = \\frac{r_2}{r_4} ω_{2}', chalk: 'green' },
-  { text: '現在:θ = {theta}°', chalk: 'yellow', live: 'theta' } ] });
-classroom.board.updateValues({ theta: 42 });         // 每秒最多套用一次
-classroom.views.goTo('board');                       // 電腦平移、VR 淡出傳送
+```bash
+npm run dev
 ```
-完整介面見 `src/scene/classroom/index.js`;配置見 `docs/scene-layout.md`;決策見 `docs/scene-decisions.md`;截圖在 `docs/screenshots/`。
 
-`node scripts/check-palette.mjs` 檢查教室是否誤用教具保留的四個語意色。
+- 學生頁:`http://localhost:5173/`(輸入名字;房間碼可空白 = 單機模式)
+- 開發捷徑:`/?skip=1&aid=wiper`(略過起始頁)、`&quality=vr|vr-baked`、`&advanced=1`、`&view=board`、`&debug=1`(FPS / draw calls / 三角面)
+- VR 測試頁:`/vr.html?aid=gears`(vr 畫質,每 5 秒在主控台記錄效能)
+- 老師頁:`/teacher.html`
+- 選單:電腦按 **Y**;Quest 左手把 Y 鍵,或左手掌心朝上碰掌上的小圓鈕。選單有七個教具、進階數學開關、看黑板 / 回到工作桌。
 
-效能檔位:`high`(電腦,GTAO + Bloom + 景深)、`vr`(Quest 3,無後製)、`vr-baked`(陰影凍結成烘焙光照、關補光;VR 掉幀時自動切換)。`classroom.refreshShadows()` 可在 `vr-baked` 中手動更新一次陰影。
+## 測試與檢查
+
+```bash
+npm test
+```
+
+```bash
+node scripts/check-palette.mjs
+```
+
+```bash
+BASE=http://localhost:5173/ node scripts/measure.mjs vr vr-baked high
+```
+
+```bash
+BASE=http://localhost:5173/ node scripts/shots.mjs "aid=wiper|wiper" "aid=gears&advanced=1|gears-blueprint"
+```
+
+`measure.mjs` 寫出 `docs/perf.json`;`shots.mjs` 用 Playwright 截圖到 `docs/screenshots/`。
+
+## 部署
+
+```bash
+npx wrangler login
+```
+
+```bash
+npx wrangler secret put TEACHER_PIN
+```
+
+```bash
+npm run deploy
+```
+
+活動當天:學生開 `https://<網域>/?room=<房間碼>`,老師開 `https://<網域>/teacher.html`。
+
+## 使用者可以補的資料
+
+- `docs/textbook-definitions.md`:課本對「結構、機構、機器」的定義原文(每個詞一行,例如 `- 結構:……`)。沒有這個檔案時黑板左區用預設三句。
+- `assets/audio/`:同名音檔會取代合成音效,名稱見該資料夾的 README。
+
+## 文件
+
+`docs/audit.md`(第一版盤點)、`docs/decisions.md`(整合決策)、`docs/progress.md`(進度、效能數字、待實機確認)、`docs/scene-decisions.md`(教室)。第一版完整備份在 `archive/v1/`。

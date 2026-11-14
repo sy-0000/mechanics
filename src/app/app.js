@@ -250,7 +250,7 @@ export function createApp({ renderer, scene, camera, classroom, onProgress }) {
   }
 
   return {
-    select, setStage, setAdvanced, update, applyServerState, interact, input, kit, missions,
+    select, unload: () => { unload(); classroom.board.clearZones(['center', 'right']); }, setStage, setAdvanced, update, applyServerState, interact, input, kit, missions,
     get state() { return G; },
     get current() { return G.current; },
     badges: () => missions.list(),
