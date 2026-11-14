@@ -23,6 +23,7 @@ export function createWindows(parent) {
     }
     curtainGeo.computeVertexNormals();
   }
+  const OPEN = [0, 0.55, 0.3]; // 各窗內側窗扇拉開的距離(公尺)
   WINDOWS.centersZ.forEach((zc, i) => {
     const wg = group(g, `window${i}`, [x, sy, zc]);
     // 外框
@@ -33,7 +34,7 @@ export function createWindows(parent) {
     // 兩扇拉窗(前後錯開),各有窗框與玻璃
     [[-0.025, -w / 4 + 0.02], [0.025, w / 4 - 0.02]].forEach(([dx, dz], k) => {
       const sw = w / 2 + 0.03, sh = h - fw * 2;
-      const s = group(wg, 'sash', [dx, h / 2, dz]);
+      const s = group(wg, 'sash', [dx, h / 2, dz + (k === 1 ? -OPEN[i] : 0)]);
       mk(s, rbox(0.03, 0.03, sw), alu, { pos: [0, sh / 2 - 0.015, 0] });
       mk(s, rbox(0.03, 0.03, sw), alu, { pos: [0, -sh / 2 + 0.015, 0] });
       mk(s, rbox(0.03, sh, 0.03), alu, { pos: [0, 0, -sw / 2 + 0.015] });

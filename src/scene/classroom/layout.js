@@ -11,7 +11,8 @@ export const WORKBENCH = {
 };
 export const OTHER_BENCHES = [[-1.9, 0.85, -1.6], [-1.9, 0.85, 0.8]];
 export const STOOL = { seatR: 0.16, seatT: 0.035, height: 0.46 };
-export const STOOLS = [[0.38, 0, -0.5], [-1.55, 0, -1.4], [-2.2, 0, 1.0]];
+// [x, y, z, 偏航(弧度)]:各自隨機偏轉 ±5–15°;左前那張被拉開到桌外
+export const STOOLS = [[0.38, 0, -0.5, 0.17], [-1.5, 0, -0.88, -0.21], [-2.2, 0, 1.0, 0.12]];
 
 export const BOARD = {
   center: [0, 1.65, -3.76], w: 4.0, h: 1.2,

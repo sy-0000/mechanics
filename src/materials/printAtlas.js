@@ -7,7 +7,7 @@ import { std } from './standard.js';
 // 所有「文字」都是無法閱讀的筆畫線條(場景規格:除黑板粉筆字外不出現可讀文字);安全守則只用圖示。
 const N = 2048, CELL = 512;
 const CELLS = ['sketch1', 'sketch2', 'sketch3', 'sketch4', 'sketch9', 'sketch11', 'timetable', 'notice1',
-  'notice2', 'drawFourBar', 'drawGear', 'drawCam', 'evacMap', 'safetyPoster', 'spare1', 'spare2'];
+  'notice2', 'drawFourBar', 'drawGear', 'drawCam', 'evacMap', 'safetyPoster', 'bookSpread', 'spare2'];
 const INK = 'rgba(95,98,102,0.9)';
 
 let canvas = null, tex = null, mat = null;
@@ -139,6 +139,26 @@ function safetyPoster(g, w, h) {
   });
 }
 
+function bookSpread(g, w, h, r) {
+  // 攤開課本的左右兩頁:假文字段落 + 一張機構示意圖 + 頁碼位置的小橫線
+  g.fillStyle = '#FBF9F1'; g.fillRect(0, 0, w, h);
+  const half = w / 2;
+  const gutter = g.createLinearGradient(half - 26, 0, half + 26, 0);
+  gutter.addColorStop(0, 'rgba(120,110,95,0)'); gutter.addColorStop(0.5, 'rgba(120,110,95,0.22)'); gutter.addColorStop(1, 'rgba(120,110,95,0)');
+  g.fillStyle = gutter; g.fillRect(half - 26, 0, 52, h);
+  g.fillStyle = '#D9E0E5'; g.fillRect(24, 22, half - 48, 26);
+  scribbleLines(g, 30, 24, half * 0.5, 22, 1, r, 'rgba(70,74,80,0.85)');
+  scribbleLines(g, 26, 64, half - 52, h - 110, 12, r);
+  g.strokeStyle = 'rgba(85,88,92,0.85)'; g.lineWidth = 1.6;
+  const ox = half + 40, oy = 40, bw = half - 80, bh = h * 0.45;
+  g.strokeRect(ox, oy, bw, bh);
+  const A = [ox + 30, oy + bh - 25], B = [ox + 60, oy + 40], Cc = [ox + bw - 70, oy + 30], D = [ox + bw - 30, oy + bh - 25];
+  g.beginPath(); g.moveTo(...A); g.lineTo(...B); g.lineTo(...Cc); g.lineTo(...D); g.stroke();
+  for (const p of [A, B, Cc, D]) { g.beginPath(); g.arc(p[0], p[1], 4, 0, 7); g.stroke(); }
+  scribbleLines(g, half + 26, oy + bh + 18, half - 52, h - bh - 90, 6, r);
+  g.fillStyle = 'rgba(110,112,116,0.6)'; g.fillRect(half * 0.5 - 8, h - 22, 16, 3); g.fillRect(half * 1.5 - 8, h - 22, 16, 3);
+}
+
 function build() {
   canvas = document.createElement('canvas'); canvas.width = canvas.height = N;
   const g = canvas.getContext('2d');
@@ -156,6 +176,7 @@ function build() {
     else if (name === 'drawCam') drawing(g, 362, CELL, r, 'cam');
     else if (name === 'evacMap') evacMap(g, CELL, 362, r);
     else if (name === 'safetyPoster') safetyPoster(g, 362, CELL);
+    else if (name === 'bookSpread') bookSpread(g, CELL, 362, r);
     g.restore();
   });
   // 極淡的紙張泛黃漸層(大面積、低對比)
