@@ -7,11 +7,11 @@ export const SUN_DIR = new THREE.Vector3(-1, 0.62, 0.28).normalize(); // 指向�
 
 export function createLights(scene, quality = 'high') {
   const root = new THREE.Group(); root.name = 'lights';
-  const hemi = new THREE.HemisphereLight('#FFF8E8', '#E9DFCC', 1.55);
+  const hemi = new THREE.HemisphereLight('#FFFBF0', '#EDE6D8', 1.3);
   root.add(hemi);
-  const amb = new THREE.AmbientLight('#FFF6E4', 0.35); root.add(amb);
+  const amb = new THREE.AmbientLight('#FFF9EE', 0.2); root.add(amb);
 
-  const sun = new THREE.DirectionalLight('#FFEFC9', 1.9);
+  const sun = new THREE.DirectionalLight('#FFF0D2', 1.55);
   const target = new THREE.Object3D(); target.position.set(...WORKBENCH.center);
   sun.target = target; root.add(target);
   sun.position.copy(target.position).addScaledVector(SUN_DIR, 6);
@@ -58,7 +58,7 @@ export function createLights(scene, quality = 'high') {
   grad.addColorStop(0.8, 'rgba(255,255,255,0.6)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
   sg.fillStyle = grad; sg.fillRect(0, 0, 64, 256);
   const shaftMat = new THREE.MeshBasicMaterial({
-    map: canvasTexture(shaftTex, { repeat: false }), color: '#FFF0C8', transparent: true, opacity: 0.06,
+    map: canvasTexture(shaftTex, { repeat: false }), color: '#FFF0C8', transparent: true, opacity: 0.035,
     blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false,
   });
   const shafts = [];
@@ -84,7 +84,7 @@ export function createLights(scene, quality = 'high') {
     for (const p of patches) { p.position.x = p.userData.base.x + drift; p.position.z = p.userData.base.z + drift * 0.4; }
     sun.position.copy(target.position).addScaledVector(SUN_DIR, 6);
     sun.position.x += drift * 0.5; sun.position.z += drift * 0.2;
-    shaftMat.opacity = 0.055 + Math.sin(t * 0.15) * 0.008;
+    shaftMat.opacity = 0.032 + Math.sin(t * 0.15) * 0.005;
   }
   function setQuality(q) {
     const size = q === 'vr' ? 1024 : 2048;

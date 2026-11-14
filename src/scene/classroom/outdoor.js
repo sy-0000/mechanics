@@ -32,12 +32,12 @@ export function createOutdoor(parent) {
   mk(g, new THREE.BoxGeometry(0.3, 4, 30), shaded('#E6E1D6', 5), { pos: [X0 - OUTDOOR.corridorW - 0.15, drop / 2 - 0.1, 0] });
   // 走廊欄杆(灰白):扶手 + 立柱 + 下方矮牆
   const railX = X0 - OUTDOOR.corridorW + 0.05;
-  mk(g, new THREE.BoxGeometry(0.12, 0.55, 30), shaded('#E9E7E1', 3), { pos: [railX, 0.275, 0] });
+  mk(g, new THREE.BoxGeometry(0.12, 0.3, 30), shaded('#E9E7E1', 3), { pos: [railX, 0.15, 0] });
   mk(g, new THREE.BoxGeometry(0.08, 0.05, 30), shaded(C.rail, 3), { pos: [railX, 1.05, 0] });
   const postGeo = new THREE.BoxGeometry(0.03, 0.5, 0.03);
   const posts = new THREE.InstancedMesh(postGeo, shaded('#D8D8D2', 3), 60);
   const m4 = new THREE.Matrix4();
-  for (let i = 0; i < 60; i++) posts.setMatrixAt(i, m4.makeTranslation(railX, 0.8, -15 + i * 0.5));
+  for (let i = 0; i < 60; i++) posts.setMatrixAt(i, m4.compose(new THREE.Vector3(railX, 0.675, -15 + i * 0.5), new THREE.Quaternion(), new THREE.Vector3(1, 1.5, 1)));
   g.add(posts);
   // 走廊天花(雨遮)
   mk(g, new THREE.BoxGeometry(OUTDOOR.corridorW + 0.2, 0.15, 30), shaded('#EEEAE0', 3), { pos: [X0 - OUTDOOR.corridorW / 2, 3.2, 0] });
@@ -77,8 +77,8 @@ export function createOutdoor(parent) {
     const tg = group(g, 'tree', [tx, groundY, tz]);
     mk(tg, trunkGeo, shaded('#9C8E80', d), { pos: [0, 1.3, 0] });
     const s = 0.9 + (i % 3) * 0.2;
-    mk(tg, crownGeo, shaded('#A9AE8E', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
-    mk(tg, crownGeo, shaded('#B5B898', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
+    mk(tg, crownGeo, shaded('#B4B096', d), { pos: [0, 3.4 * s, 0], scale: [s, s * 1.15, s] });
+    mk(tg, crownGeo, shaded('#C0BDA4', d), { pos: [0.5, 4.2 * s, 0.3], scale: s * 0.65 });
   });
   // 遠方校舍(盒子 + 窗帶)
   const bldg = (x, z, w, h, d, ry = 0) => {
@@ -88,9 +88,10 @@ export function createOutdoor(parent) {
     for (let f = 1; f < h / 3.4; f++) mk(b, new THREE.BoxGeometry(w + 0.02, 0.6, d + 0.02), basic('#C9CED1', dist), { pos: [0, f * 3.4 - 1.2, 0] });
     mk(b, new THREE.BoxGeometry(w + 0.4, 0.3, d + 0.4), shaded('#D2C9BC', dist), { pos: [0, h + 0.15, 0] });
   };
-  bldg(-48, -6, 6, 14, 30, 0.1);
-  bldg(-40, 26, 22, 11, 7, 0.4);
-  bldg(-44, -30, 20, 12, 7, -0.5);
+  // 校舍放在操場兩側與遠端,中間留空,讓跑道與山稜線清楚可見
+  bldg(-68, 4, 7, 10, 34, 0.05);
+  bldg(-44, 34, 26, 11, 7, 0.35);
+  bldg(-46, -36, 24, 12, 7, -0.4);
 
   // 弧形背景板:天空漸層 + 淡淡山稜線(只覆蓋窗外 −X 半邊)
   const sky = makeCanvas(1024, 512), sg = sky.getContext('2d');

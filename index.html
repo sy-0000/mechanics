@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>生科教室</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #FEFDF5; }
+    canvas { display: block; }
+    #vr { position: fixed; right: 16px; bottom: 16px; width: 44px; height: 44px; border-radius: 50%; border: 0;
+          background: rgba(46,50,48,0.75); display: none; cursor: pointer; padding: 0; }
+    #vr svg { width: 26px; height: 26px; }
+  </style>
+</head>
+<body>
+  <!-- 只有圖示的「進入 VR」按鈕(瀏覽器支援 WebXR 時才出現) -->
+  <button id="vr" aria-label="VR"><svg viewBox="0 0 24 24" fill="none" stroke="#F2EFE6" stroke-width="1.8"><rect x="2" y="7" width="20" height="11" rx="3"/><circle cx="8" cy="12.5" r="2"/><circle cx="16" cy="12.5" r="2"/></svg></button>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

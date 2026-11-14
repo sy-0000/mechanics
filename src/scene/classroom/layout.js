@@ -29,14 +29,14 @@ export const OUTDOOR = {
 };
 
 export const PEGBOARD = { x: 3.25, zc: -1.0, w: 2.4, h: 1.2, y0: 1.0 };
-export const APRON_RACK = { x: 3.25, zc: 0.55, y: 1.75, count: 4, spacing: 0.24 };
+export const APRON_RACK = { x: 3.25, zc: 0.62, y: 1.75, count: 4, spacing: 0.27 };
 export const DRILL_PRESS = { base: [2.65, 0, 1.3], h: 1.6 };
 export const BAND_SAW = { base: [2.6, 0, 2.6], h: 1.65 };
 
 export const LUMBER_RACK = { x0: -3.05, x1: -0.9, z: 3.7, depth: 0.62, levels: [0.12, 0.95, 1.65] };
 export const MDF = { w: 2.44, d: 1.22, count: 14 };
-export const TIMBER = { x: -0.72, count: 5, len: 2.4 };
-export const TRASH_BIN = { pos: [-0.32, 0, 3.38], r: 0.24, h: 0.72 };
+export const TIMBER = { x: -0.55, count: 5, len: 2.4 };
+export const TRASH_BIN = { pos: [-0.12, 0, 3.38], r: 0.24, h: 0.72 };
 export const CABINET = { x0: 0.35, x1: 2.15, z: 3.7, depth: 0.42, h: 1.8, shelves: [0.45, 0.95, 1.4] };
 export const DOOR = { xc: 2.7, w: 0.9, h: 2.1 };
 
@@ -48,6 +48,6 @@ export const VIEWPOINTS = {
   board: { position: [0, 0, -2.1], yaw: 0 },     // 講桌前方,正對黑板
 };
 export const DESKTOP_VIEWS = {
-  bench: { eye: [0, 1.42, 0.28], target: [0, 0.86, -0.62] },
+  bench: { eye: [0, 1.58, 0.62], target: [0, 0.9, -0.75] },
   board: { eye: [0, 1.6, -1.15], target: [0, 1.65, -3.76] },
 };

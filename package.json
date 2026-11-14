@@ -1,10 +1,12 @@
 {
   "name": "mechanics",
   "version": "1.0.0",
-  "description": "",
+  "description": "國中生活科技教室 Three.js 場景(機構教學 VR 環境)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,6 @@
   },
   "devDependencies": {
     "vite": "^5.4.11"
-  }
+  },
+  "type": "module"
 }

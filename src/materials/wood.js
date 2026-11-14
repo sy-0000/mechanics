@@ -17,10 +17,10 @@ export function woodTexture(kind = 'grain', seed = 7) {
     }
   }
   for (let i = 0; i < 70; i++) {
-    const y0 = r() * 512, amp = 2 + r() * 6, a = 0.04 + r() * 0.08;
+    const y0 = r() * 512, amp = 2 + r() * 6, a = 0.04 + r() * 0.08, f = 40 + r() * 60;
     g.strokeStyle = `rgba(90,80,70,${a})`; g.lineWidth = 0.6 + r() * 1.6;
     g.beginPath();
-    for (let x = 0; x <= 512; x += 16) g.lineTo(x, y0 + Math.sin(x / (40 + r() * 30) + i) * amp);
+    for (let x = 0; x <= 512; x += 8) g.lineTo(x, y0 + Math.sin(x / f + i) * amp + Math.sin(x / (f * 0.37) + i * 2) * amp * 0.25);
     g.stroke();
   }
   const knots = kind === 'knotty' ? 4 : kind === 'laminate' ? 0 : 1;
@@ -34,5 +34,6 @@ export function woodTexture(kind = 'grain', seed = 7) {
   return (texCache[key] = canvasTexture(c));
 }
 export function woodMat(color, kind = 'grain', seed = 7) {
+  seed = kind === 'grain' ? 7 + (seed % 2) * 10 : kind === 'knotty' ? 3 + (seed % 2) : 13; // 共用少數幾張貼圖,利於合併
   return toon(color, { map: woodTexture(kind, seed), key: `wood|${color}|${kind}|${seed}` });
 }
